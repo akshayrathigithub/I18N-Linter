@@ -94,7 +94,7 @@ jobs:
                       local line="${new_lines[i]}"
                       local lineWithoutComments=$(echo "$line" | sed -E 's/\/\/.*|\/\*[^*]*\*\///g')
                       local words=()
-                      echo "$i line number"
+                      echo "$line $i line-number"
 
                       IFS=' ' read -r -a words <<< "$lineWithoutComments"
 
