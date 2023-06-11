@@ -3,20 +3,6 @@
 * Supported currencies: INR, MYR, USD, RM, ₹
 */
 
-function currencyConverter(amount, fromCurrency, toCurrency) {
-  // Check if the input values are valid
-  if (isNaN(amount) || amount <= 0) {
-      console.error('Invalid amount. Please provide a positive numeric value.');
-      return;
-  }
-
-  // Check if the currencies are supported
-  const supportedCurrencies = ['INR', 'MYR', 'USD', 'RM', '₹'];
-  if (!supportedCurrencies.includes(fromCurrency) || !supportedCurrencies.includes(toCurrency)) {
-      console.error('Invalid currency. Supported currencies are: INR, MYR, USD, RM, ₹');
-      return;
-  }
-
 
   
 
