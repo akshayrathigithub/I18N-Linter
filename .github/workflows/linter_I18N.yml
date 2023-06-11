@@ -99,7 +99,7 @@ jobs:
                           local regex
                           regex="$pattern"
                           local match
-                          match=$(echo "$word" | grep -oF "$regex")
+                          match=$(echo "$word" | grep -oE "$regex")
 
                           if [[ -n "$match" ]]; then
                             local error_mapping
