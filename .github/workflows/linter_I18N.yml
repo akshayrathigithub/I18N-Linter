@@ -109,7 +109,6 @@ jobs:
                           if [[ -n "$match" ]]; then
                             local error_mapping
                             local error_msg
-                            echo "HELLO $type $i"
 
                             error_mapping["currency"]="Hard coded currency {} found, please use currency from User model file something like- props.user.merchant.currency"
                             error_mapping["symbol"]="Avoid hardcoding currency symbols instead import symbols from rzp-utils file"
