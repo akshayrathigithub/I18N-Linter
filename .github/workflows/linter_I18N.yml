@@ -83,20 +83,19 @@ jobs:
                     # local currencySymbols=("₹" "\\$-*(?!{)")
                     local currencySymbols=("RBI")
                     local regionSpecificWords=("RBI" "GST" "CIN")
-                    local lines=()
                     local errors=()
-                    IFS=$'\n' read -r -d '' -a lines <<< "$code"
-                    mapfile -d '' -t newLines < <(cat "$file")
-                    echo "${newLines[@]} newLines"
-                    echo "${lines[@]} lines"
+
+                    mapfile -d '' -t lines < <(cat "$file")
+
                     for ((i = 0; i < ${#lines[@]}; i++)); do
                       local line="${lines[i]}"
                       local lineWithoutComments=$(echo "$line" | sed -E 's/\/\/.*|\/\*[^*]*\*\///g')
                       local words=()
-
+                      echo "$line LINE"
                       IFS=' ' read -r -a words <<< "$lineWithoutComments"
 
                       for word in "${words[@]}"; do
+                        echo "$word WORD"
                         hasMatch() {
                           local pattern="$1"
                           local type="$2"
