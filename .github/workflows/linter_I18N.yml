@@ -84,9 +84,15 @@ jobs:
                     local currencySymbols=("RBI")
                     local regionSpecificWords=("RBI" "GST" "CIN")
                     local lines=()
+                    local new_lines=()
                     local errors=()
 
                     IFS=$'\n' read -r -d '' -a lines <<< "$code"
+
+                    mapfile -d '' -t new_lines < <(cat "$file")
+
+                    echo "${new_lines[@]} new_lines"
+                    echo "${lines[@]} lines"
 
                     for ((i = 0; i < ${#lines[@]}; i++)); do
                       local line="${lines[i]}"
