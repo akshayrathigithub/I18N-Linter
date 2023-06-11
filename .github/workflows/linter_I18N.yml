@@ -17,16 +17,10 @@ jobs:
         with:
             fetch-depth: 0
 
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: lts/*
-
       - name: Extract branch name
         shell: bash
         run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
         id: extract_branch
-
 
       - name: Get changed files
         id: changed-files
@@ -80,8 +74,8 @@ jobs:
                   checkKeywords() {
                     local code="${1}"
                     local currencies=("INR" "Ruppees" "RM" "MYR")
-                    # local currencySymbols=("₹" "\\$-*(?!{)")
-                    local currencySymbols=("RBI")
+                    local currencySymbols=("₹" "\\$-*(?!{)")
+                    # local currencySymbols=("RBI")
                     local regionSpecificWords=("RBI" "GST" "CIN")
                     local new_lines=()
                     local errors=()
@@ -94,7 +88,6 @@ jobs:
                       local line="${new_lines[i]}"
                       local lineWithoutComments=$(echo "$line" | sed -E 's/\/\/.*|\/\*[^*]*\*\///g')
                       local words=()
-                      echo "$line $((i+1)) line-number"
 
                       IFS=' ' read -r -a words <<< "$lineWithoutComments"
 
@@ -129,7 +122,7 @@ jobs:
                         done
 
                         for symbol in "${currencySymbols[@]}"; do
-                            hasMatch "\\b$symbol\\b" "symbol"
+                            hasMatch "\$symbol\" "symbol"
                         done
 
                         for currency in "${currencies[@]}"; do
