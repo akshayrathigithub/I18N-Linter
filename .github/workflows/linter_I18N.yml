@@ -84,7 +84,6 @@ jobs:
                     local currencySymbols=("RBI")
                     local regionSpecificWords=("RBI" "GST" "CIN")
                     local new_lines=()
-                    local arr=()
                     local errors=()
 
                     # mapfile -d '' -t new_lines < <(cat "$file")
@@ -93,16 +92,8 @@ jobs:
                       new_lines+=("$line")
                     done < "$file"
 
-                    a=0
-                    while read line; do
-                      arr[$a]="$line"
-                      a=$((a+1))
-                    done < "$file"
-
-                    echo "${arr[@]} new_lines"
                     echo "${new_lines[@]} new_lines"
                     echo "${new_lines[0]} first lines"
-                    echo "${arr[0]} first lines arr"
 
                     for ((i = 0; i < ${#new_lines[@]}; i++)); do
                       local line="${lines[i]}"
