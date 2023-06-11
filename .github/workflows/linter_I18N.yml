@@ -145,7 +145,7 @@ jobs:
                       echo "$error" >&2
                     done <<< "$errors"
                   else
-                    echo "No keyword errors found."
+                    echo "No hardcoding related to I18N found."
                   fi
                   echo "Valid file"
                 else
