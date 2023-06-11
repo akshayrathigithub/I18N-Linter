@@ -83,9 +83,10 @@ jobs:
                     # local currencySymbols=("₹" "\\$-*(?!{)")
                     local currencySymbols=("RBI")
                     local regionSpecificWords=("RBI" "GST" "CIN")
+                    local lines=()
                     local errors=()
 
-                    mapfile -d '' -t lines < <(cat "$file")
+                    IFS=$'\n' read -r -d '' -a lines <<< "$code"
 
                     for ((i = 0; i < ${#lines[@]}; i++)); do
                       local line="${lines[i]}"
