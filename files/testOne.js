@@ -1,29 +1,59 @@
+function complexFunction(input) {
+  let result = 0;
 
-const CURRENCY_SYMBOL = {
-  INR: "₹",
-  MYR: "RM",
-  USD: "$"
-}
-
-function convertCurrency(amount, currency) {
-    // Calculate INR to USD conversion
-    const conversionRate = 0.014;
-    const convertedAmount = amount * conversionRate; // Conversion to USD
-    const INRsymbole = "₹";
-  
-    if (currency === "INR") {
-      return convertedAmount;
-    } else if (currency === "₹") {
-      return convertedAmount;
-    } else if (currency === "MYR") {
-      return convertedAmount * 4.55; // Conversion to MYR
-    }else if (currency === "USD") {
-      return convertedAmount * 80.98; // Conversion to USD
-    }
-     else {
-      return "Unsupported currency";
+  // Perform some calculations
+  for (let i = 0; i < input.length; i++) {
+    if (input[i] % 2 === 0) {
+      result += input[i] * 2;
+    } else {
+      result -= input[i] / 2;
     }
   }
 
+  // Apply additional logic
+  if (result > 1000) {
+    result = Math.sqrt(result);
+  } else if (result < 0) {
+    result = 0;
+  }
 
-  
+  // Perform data manipulation
+  const transformedData = input.map((item) => {
+    return item.toString().toUpperCase();
+  });
+
+  // Perform string operations
+  let output = '';
+  for (let i = 0; i < transformedData.length; i++) {
+    if (i !== 0) {
+      output += ', ';
+    }
+    output += transformedData[i];
+  }
+
+  // Generate a formatted result
+  const finalResult = `The calculated result is: ${result.toFixed(2)}. Transformed data: [${output}].`;
+
+  // Perform some more calculations
+  for (let i = 0; i < transformedData.length; i++) {
+    if (transformedData[i].length > 5) {
+      result += transformedData[i].length;
+    }
+  }
+
+  // Apply final adjustments
+  if (result < 100) {
+    result *= 2;
+  }
+
+  // Return the final result
+  return {
+    result: result.toFixed(2),
+    message: finalResult,
+  };
+}
+
+// Example usage
+const inputArray = [1, 2, 3, 4, 5];
+const functionResult = complexFunction(inputArray);
+console.log(functionResult);
