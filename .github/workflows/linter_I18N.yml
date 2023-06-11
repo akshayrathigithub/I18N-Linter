@@ -98,7 +98,7 @@ jobs:
                     echo "${new_lines[@]} new_lines"
                     echo "${lines[@]} lines"
 
-                    for ((i = 0; i < ${#lines[@]}; i++)); do
+                    for ((i = 0; i < ${#new_lines[@]}; i++)); do
                       local line="${lines[i]}"
                       local lineWithoutComments=$(echo "$line" | sed -E 's/\/\/.*|\/\*[^*]*\*\///g')
                       local words=()
