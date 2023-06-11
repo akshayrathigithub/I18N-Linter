@@ -86,7 +86,7 @@ jobs:
                     local new_lines=()
                     local errors=()
                     
-                    while IFS= read -r line; do
+                    while IFS= read -r line || [[ "$line" ]]; do
                       new_lines+=("$line")
                     done < "$file"
 
@@ -94,7 +94,7 @@ jobs:
                       local line="${new_lines[i]}"
                       local lineWithoutComments=$(echo "$line" | sed -E 's/\/\/.*|\/\*[^*]*\*\///g')
                       local words=()
-                      echo "$line $i line-number"
+                      echo "$line $((i+1)) line-number"
 
                       IFS=' ' read -r -a words <<< "$lineWithoutComments"
 
