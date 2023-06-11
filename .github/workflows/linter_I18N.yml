@@ -75,7 +75,7 @@ jobs:
                   return 1
                 }
                 if validFile "$file"; then
-                  original_content="$(cat "$file"; echo -n)"
+                  original_content=$(cat "$file")
                   content_diff="$(git diff origin/${{ github.event.pull_request.base.ref }} origin/${{ steps.extract_branch.outputs.branch }} -- $file)"
                   checkKeywords() {
                     local code="${1}"
