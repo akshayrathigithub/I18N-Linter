@@ -75,11 +75,8 @@ jobs:
                   return 1
                 }
                 if validFile "$file"; then
-                  original_content=$(cat "$file")
-                  echo "$original_content"
-                  new_file="$(cat $file; printf a)"
-                  new_file="${new_file%a}"
-                  echo "$new_file"
+                  original_content="$(cat $file; printf a)"
+                  original_content="${new_file%a}"
                   content_diff="$(git diff origin/${{ github.event.pull_request.base.ref }} origin/${{ steps.extract_branch.outputs.branch }} -- $file)"
                   checkKeywords() {
                     local code="${1}"
