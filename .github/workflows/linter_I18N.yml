@@ -85,9 +85,9 @@ jobs:
                     local regionSpecificWords=("RBI" "GST" "CIN")
                     local lines=()
                     local errors=()
-                    echo "$code"
+                    echo "$code code"
                     IFS=$'\n' read -r -d '' -a lines <<< "$code"
-                    echo "$lines"
+                    echo "$lines lines"
                     for ((i = 0; i < ${#lines[@]}; i++)); do
                       local line="${lines[i]}"
                       local lineWithoutComments=$(echo "$line" | sed -E 's/\/\/.*|\/\*[^*]*\*\///g')
