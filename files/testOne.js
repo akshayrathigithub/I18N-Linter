@@ -89,6 +89,5 @@ const fromCurrency = 'INR';
 const toCurrency = 'USD';
 
 const convertedAmount = currencyConverter(amountToConvert, fromCurrency, toCurrency);
-console.log(`Converted amount: ${convertedAmount} ${toCurrency}`);
 
 
