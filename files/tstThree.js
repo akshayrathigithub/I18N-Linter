@@ -1,61 +1,94 @@
-function complexFunction(input) {
-  let result = 0;
+/*
+* This function converts the given amount from one currency to another.
+* Supported currencies: INR, MYR, USD, RM, ₹
+*/
 
-  // Perform some calculations
-  for (let i = 0; i < input.length; i++) {
-    if (input[i] % 2 === 0) {
-      result += input[i] * 2;
-    } else {
-      result -= input[i] / 2;
-    }
+function currencyConverter(amount, fromCurrency, toCurrency) {
+  // Check if the input values are valid
+  if (isNaN(amount) || amount <= 0) {
+      console.error('Invalid amount. Please provide a positive numeric value.');
+      return;
   }
 
-  // Apply additional logic
-  if (result > 1000) {
-    result = Math.sqrt(result);
-  } else if (result < 0) {
-    result = 0;
+  // Check if the currencies are supported
+  const supportedCurrencies = ['INR', 'MYR', 'USD', 'RM', '₹'];
+  if (!supportedCurrencies.includes(fromCurrency) || !supportedCurrencies.includes(toCurrency)) {
+      console.error('Invalid currency. Supported currencies are: INR, MYR, USD, RM, ₹');
+      return;
   }
 
-  // Perform data manipulation
-  const transformedData = input.map((item) => {
-    return item.toString().toUpperCase();
-  });
+  // Conversion rates
+  const INR_TO_MYR = 0.058;
+  const INR_TO_USD = 0.014;
+  const MYR_TO_INR = 17.24;
+  const MYR_TO_USD = 0.24;
+  const USD_TO_INR = 72.24;
+  const USD_TO_MYR = 4.12;
+  const RM_TO_INR = 17.24;
+  const RM_TO_USD = 0.24;
 
-  // Perform string operations
-  let output = '';
-  for (let i = 0; i < transformedData.length; i++) {
-    if (i !== 0) {
-      output += ', ';
-    }
-    output += transformedData[i];
+  // Perform the conversion
+  let convertedAmount;
+  if (fromCurrency === 'INR') {
+      if (toCurrency === 'MYR') {
+          convertedAmount = amount * INR_TO_MYR;
+      } else if (toCurrency === 'USD') {
+          convertedAmount = amount * INR_TO_USD;
+      } else if (toCurrency === 'RM') {
+          convertedAmount = amount * RM_TO_INR;
+      } else if (toCurrency === '₹') {
+          console.warn('Conversion from INR to ₹ is not supported.');
+          return;
+      }
+  } else if (fromCurrency === 'MYR') {
+      if (toCurrency === 'INR') {
+          convertedAmount = amount * MYR_TO_INR;
+      } else if (toCurrency === 'USD') {
+          convertedAmount = amount * MYR_TO_USD;
+      } else if (toCurrency === 'RM') {
+          console.warn('Conversion from MYR to RM is not supported.');
+          return;
+      } else if (toCurrency === '₹') {
+          console.warn('Conversion from MYR to ₹ is not supported.');
+          return;
+      }
+  } else if (fromCurrency === 'USD') {
+      if (toCurrency === 'INR') {
+          convertedAmount = amount * USD_TO_INR;
+      } else if (toCurrency === 'MYR') {
+          convertedAmount = amount * USD_TO_MYR;
+      } else if (toCurrency === 'RM') {
+          convertedAmount = amount * RM_TO_USD;
+      } else if (toCurrency === '₹') {
+          console.warn('Conversion from USD to ₹ is not supported.');
+          return;
+      }
+  } else if (fromCurrency === 'RM') {
+      if (toCurrency === 'INR') {
+          convertedAmount = amount * RM_TO_INR;
+      } else if (toCurrency === 'MYR') {
+          console.warn('Conversion from RM to MYR is not supported.');
+          return;
+      } else if (toCurrency === 'USD') {
+          convertedAmount = amount * RM_TO_USD;
+      } else if (toCurrency === '₹') {
+          console.warn('Conversion from RM to ₹ is not supported.');
+          return;
+      }
+  } else if (fromCurrency === '₹') {
+      console.warn('Conversion from ₹ to any other currency is not supported.');
+      return;
   }
 
-  // Generate a formatted result
-  const finalResult = `The calculated result is: ${result.toFixed(2)}. Transformed data: [${output}].`;
-
-  // Perform some more calculations
-  for (let i = 0; i < transformedData.length; i++) {
-    if (transformedData[i].length > 5) {
-      result += transformedData[i].length;
-    }
-  }
-
-  // Apply final adjustments
-  if (result < 100) {
-    result *= 2;
-  }
-
-  // Return the final result
-  return {
-    result: result.toFixed(2),
-    message: finalResult,
-  };
+  return convertedAmount;
 }
 
-// Example usage
-const inputArray = [1, 2, 3, 4, 5];
-const functionResult = complexFunction(inputArray);
-console.log(functionResult);
+// Usage example
+const amountToConvert = 100;
+const fromCurrency = 'INR';
+const toCurrency = 'USD';
+
+const convertedAmount = currencyConverter(amountToConvert, fromCurrency, toCurrency);
+console.log(`Converted amount: ${convertedAmount} ${toCurrency}`);
 
 
