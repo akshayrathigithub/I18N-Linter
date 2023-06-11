@@ -76,7 +76,6 @@ jobs:
                 }
                 if validFile "$file"; then
                   original_content="$(cat "$file"; echo -n)"
-                  echo "$original_content mapping content"
                   content_diff="$(git diff origin/${{ github.event.pull_request.base.ref }} origin/${{ steps.extract_branch.outputs.branch }} -- $file)"
                   checkKeywords() {
                     local code="${1}"
@@ -86,9 +85,9 @@ jobs:
                     local regionSpecificWords=("RBI" "GST" "CIN")
                     local lines=()
                     local errors=()
-
+                    echo "$code code"
                     IFS=$'\n' read -r -d '' -a lines <<< "$code"
-
+                    echo "$lines Lines"
                     for ((i = 0; i < ${#lines[@]}; i++)); do
                       local line="${lines[i]}"
                       echo "$line $i"
