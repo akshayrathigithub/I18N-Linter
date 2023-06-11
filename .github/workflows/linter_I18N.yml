@@ -1,4 +1,4 @@
-name: Linter
+name: I18N-Linter
 
 on:
   push:
@@ -17,16 +17,10 @@ jobs:
         with:
             fetch-depth: 0
 
-      - name: Setup Node
-        uses: actions/setup-node@v3
-        with:
-          node-version: lts/*
-
       - name: Extract branch name
         shell: bash
         run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
         id: extract_branch
-
 
       - name: Get changed files
         id: changed-files
@@ -36,7 +30,7 @@ jobs:
             else
                 echo "changed_files=$(git diff --name-only --line-prefix=`git rev-parse --show-toplevel`/ ${{ github.event.before }} ${{ github.event.after }} | xargs)" >> $GITHUB_OUTPUT
             fi
-      - name: List changed files
+      - name: Running-I18N-Linter
         id: text-files
         run: |
               for file in ${{ steps.changed-files.outputs.changed_files }}; do
@@ -81,15 +75,18 @@ jobs:
                     local code="${1}"
                     local currencies=("INR" "Ruppees" "RM" "MYR")
                     # local currencySymbols=("₹" "\\$-*(?!{)")
+                    # local currencySymbols=("\\₹" "\\$-\\*\\(\\?\\!\\{\\)")
                     local currencySymbols=("RBI")
                     local regionSpecificWords=("RBI" "GST" "CIN")
-                    local lines=()
+                    local new_lines=()
                     local errors=()
-                    echo "$code"
-                    IFS=$'\n' read -r -d '' -a lines <<< "$code"
-                    echo "$lines"
-                    for ((i = 0; i < ${#lines[@]}; i++)); do
-                      local line="${lines[i]}"
+                    
+                    while IFS= read -r line || [[ "$line" ]]; do
+                      new_lines+=("$line")
+                    done < "$file"
+
+                    for ((i = 0; i < ${#new_lines[@]}; i++)); do
+                      local line="${new_lines[i]}"
                       local lineWithoutComments=$(echo "$line" | sed -E 's/\/\/.*|\/\*[^*]*\*\///g')
                       local words=()
 
@@ -103,21 +100,22 @@ jobs:
                           regex="$pattern"
                           local match
                           match=$(echo "$word" | grep -oE "$regex")
+                          local warning_title="Razorpay/I18N-Linter"
 
                           if [[ -n "$match" ]]; then
                             local error_mapping
-                            local error_msg
+                            local warning_msg
 
                             error_mapping["currency"]="Hard coded currency {} found, please use currency from User model file something like- props.user.merchant.currency"
                             error_mapping["symbol"]="Avoid hardcoding currency symbols instead import symbols from rzp-utils file"
                             error_mapping["text"]="Region specific keyword detected, please use genric term as we are also supporting multiple regions merchant who might be not aware of {} keyword"
 
                             if [[ "${error_mapping[$type]+exists}" ]]; then
-                              error_msg="${error_mapping[$type]//\{\}/$word}"
+                              warning_msg="${error_mapping[$type]//\{\}/$word}"
                             else
-                              error_msg="Region specific text detected, please take approval from i18n team for this change"
+                              warning_msg="Region specific text detected, please take approval from i18n team for this change"
                             fi
-                            echo "::warning file=$file,line=$((i + 1)),col=15::$error_msg"
+                            echo "::warning file=$file,line=$((i + 1)),col=15,title=$warning_title::$warning_msg"
                           fi
                         }
 
@@ -126,7 +124,7 @@ jobs:
                         done
 
                         for symbol in "${currencySymbols[@]}"; do
-                            hasMatch "\\b$symbol\\b" "symbol"
+                            hasMatch "$symbol" "symbol"
                         done
 
                         for currency in "${currencies[@]}"; do
