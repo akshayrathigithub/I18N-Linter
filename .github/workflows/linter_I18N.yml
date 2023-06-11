@@ -89,7 +89,11 @@ jobs:
 
                     IFS=$'\n' read -r -d '' -a lines <<< "$code"
 
-                    mapfile -d '' -t new_lines < <(cat "$file")
+                    # mapfile -d '' -t new_lines < <(cat "$file")
+                    
+                    while IFS= read -r line; do
+                      new_lines+=("$line")
+                    done < "$file"
 
                     echo "${new_lines[@]} new_lines"
                     echo "${lines[@]} lines"
