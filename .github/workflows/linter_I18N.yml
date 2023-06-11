@@ -86,8 +86,14 @@ jobs:
                     local lines=()
                     local errors=()
                     echo "$code code"
+
                     IFS=$'\n' read -r -d '' -a lines <<< "$code"
-                    echo "$lines Lines"
+
+                    text=""
+                    while IFS= read -r -d '' line; do
+                      text+="$line"$'\0'
+                    done < "$code"
+                    echo -n "$text"
                     for ((i = 0; i < ${#lines[@]}; i++)); do
                       local line="${lines[i]}"
                       echo "$line $i"
