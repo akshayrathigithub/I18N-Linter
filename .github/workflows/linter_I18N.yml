@@ -115,7 +115,7 @@ jobs:
                             else
                               warning_msg="Region specific text detected, please take approval from i18n team for this change"
                             fi
-                            echo "::warning file=$file,line=$((i + 1)),col=15,title={warning_title}::$warning_msg"
+                            echo "::warning file=$file,line=$((i + 1)),col=15,title=$warning_title::$warning_msg"
                           fi
                         }
 
