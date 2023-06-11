@@ -77,9 +77,9 @@ jobs:
                 if validFile "$file"; then
                   original_content="$(cat $file; printf a)"
                   original_content="${original_content%a}"
-                  mapfile -d '' content < $file
+                  mapfile -d '' content < "$file"
                   text="${content[*]}"
-                  echo "$text Hello"
+                  echo "$text mapping content"
                   content_diff="$(git diff origin/${{ github.event.pull_request.base.ref }} origin/${{ steps.extract_branch.outputs.branch }} -- $file)"
                   checkKeywords() {
                     local code="${1}"
