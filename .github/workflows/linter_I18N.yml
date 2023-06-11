@@ -76,7 +76,6 @@ jobs:
                 }
                 if validFile "$file"; then
                   original_content=$(cat "$file")
-                  echo "$original_content"
                   content_diff="$(git diff origin/${{ github.event.pull_request.base.ref }} origin/${{ steps.extract_branch.outputs.branch }} -- $file)"
                   checkKeywords() {
                     local code="${1}"
@@ -86,12 +85,11 @@ jobs:
                     local regionSpecificWords=("RBI" "GST" "CIN")
                     local lines=()
                     local errors=()
-
+                    echo "$code"
                     IFS=$'\n' read -r -d '' -a lines <<< "$code"
-
+                    echo "$lines"
                     for ((i = 0; i < ${#lines[@]}; i++)); do
                       local line="${lines[i]}"
-                      echo "$line $i"
                       local lineWithoutComments=$(echo "$line" | sed -E 's/\/\/.*|\/\*[^*]*\*\///g')
                       local words=()
 
@@ -109,7 +107,6 @@ jobs:
                           if [[ -n "$match" ]]; then
                             local error_mapping
                             local error_msg
-                            echo "HELLO $type $i"
 
                             error_mapping["currency"]="Hard coded currency {} found, please use currency from User model file something like- props.user.merchant.currency"
                             error_mapping["symbol"]="Avoid hardcoding currency symbols instead import symbols from rzp-utils file"
@@ -146,7 +143,7 @@ jobs:
                       echo "$error" >&2
                     done <<< "$errors"
                   else
-                    echo "No keyword errors found."
+                    echo "No hardcoding related to I18N found."
                   fi
                   echo "Valid file"
                 else
