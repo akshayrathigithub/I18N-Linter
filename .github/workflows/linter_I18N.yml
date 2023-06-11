@@ -76,11 +76,6 @@ jobs:
                 }
                 if validFile "$file"; then
                   original_content=$(cat "$file")
-                  text=""
-                  while IFS= read -r -d '' line; do
-                    text+="$line"$'\0'
-                  done < "$file"
-                  echo -n "$text text"
                   content_diff="$(git diff origin/${{ github.event.pull_request.base.ref }} origin/${{ steps.extract_branch.outputs.branch }} -- $file)"
                   checkKeywords() {
                     local code="${1}"
@@ -90,9 +85,9 @@ jobs:
                     local regionSpecificWords=("RBI" "GST" "CIN")
                     local lines=()
                     local errors=()
-
+                    echo "$code"
                     IFS=$'\n' read -r -d '' -a lines <<< "$code"
-
+                    echo "$lines"
                     for ((i = 0; i < ${#lines[@]}; i++)); do
                       local line="${lines[i]}"
                       local lineWithoutComments=$(echo "$line" | sed -E 's/\/\/.*|\/\*[^*]*\*\///g')
