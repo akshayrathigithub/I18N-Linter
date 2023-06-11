@@ -1,9 +1,7 @@
+
 const CURRENCY_SYMBOL = {
-  // Conversion to MYR
   INR: "₹",
-  // Conversion to MYR
   MYR: "RM",
-  // Conversion to MYR
   USD: "$"
 }
 
