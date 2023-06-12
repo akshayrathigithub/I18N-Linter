@@ -105,14 +105,14 @@ jobs:
                           if [[ -n "$match" ]]; then
                             local error_mapping
                             local warning_msg
-                            echo "$type TYPE"
 
                             error_mapping["currency"]="Hard coded currency {} found, please use currency from User model file something like- props.user.merchant.currency"
                             error_mapping["symbol"]="Avoid hardcoding currency symbols instead import symbols from rzp-utils file"
                             error_mapping["text"]="Region specific keyword detected, please use genric term as we are also supporting multiple regions merchant who might be not aware of {} keyword"
-
+                            
                             if [[ "${error_mapping[$type]+exists}" ]]; then
                               warning_msg="${error_mapping[$type]//\{\}/$word}"
+                              echo "$error_mapping[$type] TYPE"
                             else
                               warning_msg="Region specific text detected, please take approval from i18n team for this change"
                             fi
