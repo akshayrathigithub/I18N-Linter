@@ -96,7 +96,6 @@ jobs:
                         hasMatch() {
                           local pattern="$1"
                           local type="$2"
-                          echo "$type TYPE"
                           local regex
                           regex="$pattern"
                           local match
@@ -106,6 +105,7 @@ jobs:
                           if [[ -n "$match" ]]; then
                             local error_mapping
                             local warning_msg
+                            echo "$type TYPE"
 
                             error_mapping["currency"]="Hard coded currency {} found, please use currency from User model file something like- props.user.merchant.currency"
                             error_mapping["symbol"]="Avoid hardcoding currency symbols instead import symbols from rzp-utils file"
