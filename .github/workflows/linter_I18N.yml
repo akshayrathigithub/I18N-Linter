@@ -145,6 +145,6 @@ jobs:
                   fi
                   echo "Valid file"
                 else
-                  echo "Linter won't run on this file"
+                  echo "Linter won't run on this file: $file"
                 fi
               done
