@@ -73,7 +73,7 @@ jobs:
                   content_diff="$(git diff origin/${{ github.event.pull_request.base.ref }} origin/${{ steps.extract_branch.outputs.branch }} -- $file)"
                   checkKeywords() {
                     local code="${1}"
-                    local currencies=("INR" "Ruppees" "RM" "MYR")
+                    local currencies=("INR" "Ruppees" "RM" "MYR" "USD")
                     # local currencySymbols=("₹" "\\$-*(?!{)")
                     # local currencySymbols=("\\₹" "\\$-\\*\\(\\?\\!\\{\\)")
                     local currencySymbols=("RBI")
