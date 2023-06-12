@@ -47,6 +47,9 @@ const CurrencyConverter = () => {
           <option value="RM">Hello</option>
           <option value="INR">Hello</option>
           <option value="USD">Hello</option>
+          <option>RBI</option>
+          <option>GST</option>
+          <option>CIN</option>
         </select>
       </div>
       <button onClick={convertCurrency}>Convert</button>
