@@ -20,6 +20,7 @@ const CurrencyConverter = () => {
     //   convertedValue = `${amount} MYR`;
     } else if (currency === 'INR') {
       convertedValue = `${amount} ₹`;
+      convertedValue = "$";
     } else if (currency === 'USD') {
       convertedValue = `$${amount}`;
     } else {
