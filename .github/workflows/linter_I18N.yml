@@ -76,8 +76,7 @@ jobs:
                   checkKeywords() {
                     local code="${1}"
                     local currencies=("INR" "Ruppees" "RM" "MYR" "USD")
-                    # local currencySymbols=("₹" "\\$-*(?!{)")
-                    local currencySymbols=("\\₹" "\\$-*(?!{)")
+                    local currencySymbols=("\\₹")
                     local regionSpecificWords=("RBI" "GST" "CIN")
                     local new_lines=()
                     local errors=()
@@ -102,7 +101,6 @@ jobs:
                           regex="$pattern"
                           local match
                           match=$(echo "$word" | grep -oE "$regex")
-                          echo "$word $keyword $match $regex Hello"
                           local warning_title="Razorpay/I18N-Linter"
 
                           if [[ -n "$match" ]]; then
