@@ -110,6 +110,7 @@ jobs:
                             local text_error_msg
                             local warning_msg
                             
+                            echo "$type TYPE"
                             case "$type" in
                               "currency")
                                   currency_error_msg="Hard coded currency {} found, please use currency from User model file something like- props.user.merchant.currency"
@@ -117,7 +118,7 @@ jobs:
                                   ;;
                               "symbol")
                                   symbol_error_msg="Avoid hardcoding currency symbols instead import symbols from rzp-utils file"
-                                  warning_msg="${symbol_error_msg}"
+                                  warning_msg="$symbol_error_msg"
                                   ;;
                               "text")
                                   text_error_msg="Region specific keyword detected, please use genric term as we are also supporting multiple regions merchant who might be not aware of {} keyword"
@@ -133,15 +134,15 @@ jobs:
                         }
 
                         for keyword in "${regionSpecificWords[@]}"; do
-                            hasMatch "\\b$keyword\\b" "text" "${keyword}"
+                            hasMatch "\\b$keyword\\b" "text" "$keyword"
                         done
 
                         for symbol in "${currencySymbols[@]}"; do
-                            hasMatch "$symbol" "symbol" "${keyword}"
+                            hasMatch "$symbol" "symbol" "$keyword"
                         done
 
                         for currency in "${currencies[@]}"; do
-                            hasMatch "\\b$currency\\b" "currency" "${keyword}"
+                            hasMatch "\\b$currency\\b" "currency" "$keyword"
                         done
                       done
                     done
