@@ -138,11 +138,11 @@ jobs:
                         done
 
                         for symbol in "${currencySymbols[@]}"; do
-                            hasMatch "$symbol" "symbol" "$keyword"
+                            hasMatch "$symbol" "symbol" "$symbol"
                         done
 
                         for currency in "${currencies[@]}"; do
-                            hasMatch "\\b$currency\\b" "currency" "$keyword"
+                            hasMatch "\\b$currency\\b" "currency" "$currency"
                         done
                       done
                     done
