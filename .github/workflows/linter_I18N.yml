@@ -137,7 +137,7 @@ jobs:
                         }
 
                         for keyword in "${regionSpecificWords[@]}"; do
-                            hasMatch "\\b$keyword\\b" "text" "$keyword"
+                            hasMatch "\\b(?<!\\.)$keyword\\b" "text" "$keyword"
                         done
 
                         for symbol in "${currencySymbols[@]}"; do
@@ -145,7 +145,7 @@ jobs:
                         done
 
                         for currency in "${currencies[@]}"; do
-                            hasMatch "\\b$currency\\b" "currency" "$currency"
+                            hasMatch "\\b(?<!\\.)$currency\\b" "currency" "$currency"
                         done
                       done
                     done
