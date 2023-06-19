@@ -70,6 +70,7 @@ jobs:
                   return 1
                 }
                 if validFile "$file"; then
+                  echo "Linter now running on file:$file"
                   original_content=$(cat "$file")
                   content_diff="$(git diff origin/${{ github.event.pull_request.base.ref }} origin/${{ steps.extract_branch.outputs.branch }} -- $file)"
                   checkKeywords() {
@@ -159,7 +160,6 @@ jobs:
                   else
                     echo "No hardcoding related to I18N found."
                   fi
-                  echo "Valid file"
                 else
                   echo "Linter won't run on this file: $file"
                 fi
