@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 
 const CurrencyConverter = () => {
   const [amount, setAmount] = useState(100);
-  const [currency, setCurrency] = useState('USD');
+  const [currency, setCurrency] = useState('USDu');
   const [convertedAmount, setConvertedAmount] = useState('');
 
   const handleAmountChange = (event) => {
@@ -17,7 +17,7 @@ const CurrencyConverter = () => {
     let convertedValue;
 
     if (currency === 'RM') {
-      convertedValue = `${amount} MYR`;
+    //   convertedValue = `${amount} MYR`;
     } else if (currency === 'INR') {
       convertedValue = `${amount} ₹`;
     } else if (currency === 'USD') {
@@ -45,11 +45,8 @@ const CurrencyConverter = () => {
         <label htmlFor="currency">Currency:</label>
         <select id="currency" value={currency} onChange={handleCurrencyChange}>
           <option value="RM">Hello</option>
-          <option value="INR">Hello</option>
-          <option value="USD">Hello</option>
-          <option>RBI</option>
-          <option>GST</option>
-          <option>CIN</option>
+          {/* <option value="INR">Hello</option>
+          <option value="USD">Hello</option> */}
         </select>
       </div>
       <button onClick={convertCurrency}>Convert</button>
