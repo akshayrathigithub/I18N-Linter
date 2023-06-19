@@ -102,6 +102,7 @@ jobs:
                           regex="$pattern"
                           local match
                           match=$(echo "$word" | grep -oE "$regex")
+                          echo "$word $keyword $match $regex Hello"
                           local warning_title="Razorpay/I18N-Linter"
 
                           if [[ -n "$match" ]]; then
