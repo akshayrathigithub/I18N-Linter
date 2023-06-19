@@ -77,8 +77,8 @@ jobs:
                     local code="${1}"
                     local currencies=("INR" "Ruppees" "RM" "MYR" "USD")
                     # local currencySymbols=("₹" "\\$-*(?!{)")
-                    # local currencySymbols=("\\₹" "\\$-\\*\\(\\?\\!\\{\\)")
-                    local currencySymbols=("RBI")
+                    local currencySymbols=("\\₹" "\\$-\\*\\(\\?\\!\\{\\)")
+                    # local currencySymbols=("RBI")
                     local regionSpecificWords=("RBI" "GST" "CIN")
                     local new_lines=()
                     local errors=()
