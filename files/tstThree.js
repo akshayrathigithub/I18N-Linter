@@ -1,26 +1,14 @@
+import React, { useState } from 'react';
 
-const CURRENCY_SYMBOL = {
-  INR: "₹",
-  MYR: "RM",
-  USD: "$"
+const currencies = {
+  INR: "indian",
+  MYR: "Malay"
 }
 
-function convertCurrency(amount, currency) {
-    // Calculate INR to USD conversion
-    const conversionRate = 0.014;
-    const convertedAmount = amount * conversionRate; // Conversion to USD
-    const INRsymbole = "₹";
-  
-    if (currency === "INR") {
-      return convertedAmount;
-    } else if (currency === "₹") {
-      return convertedAmount;
-    } else if (currency === "MYR") {
-      return convertedAmount * 4.55; // Conversion to MYR
-    }else if (currency === "USD") {
-      return convertedAmount * 80.98; // Conversion to USD
-    }
-     else {
-      return "Unsupported currency";
-    }
-  }
+const indianCurrency = currencies.INR;
+
+const defaultCurrency = currencies.PK ? currencies.PK : "INR";
+
+function getCurrency(currency="INR"){
+  console.log("HELLO Razorpay")
+}
