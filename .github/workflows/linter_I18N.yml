@@ -33,6 +33,11 @@ jobs:
             fi
       - name: Running-I18N-Linter
         id: text-files
+        if: |
+          !(
+            startsWith(steps.extract_branch.outputs.branch, 'revert-') ||
+            startsWith(steps.extract_branch.outputs.branch, 'skiplint-')
+          )
         run: |
               for file in ${{ steps.changed-files.outputs.changed_files }}; do
                 validFile() {
