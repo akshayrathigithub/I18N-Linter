@@ -95,7 +95,6 @@ jobs:
                         match=$(echo "$lineWithoutComments" | grep -P "$regex")
                         if [[ -n "$match" ]]; then
                           shouldLineBeIgnored=1
-                          echo "match found line to be ignored: $lineWithoutComments"
                           break
                         fi
                       done
@@ -173,6 +172,6 @@ jobs:
                     echo "No hardcoding related to I18N found."
                   fi
                 else
-                  echo "Linter won't run on this file: $file"
+                  echo "Linter will ignore file: $file"
                 fi
               done
