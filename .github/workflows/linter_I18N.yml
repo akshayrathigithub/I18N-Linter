@@ -75,9 +75,9 @@ jobs:
                   content_diff="$(git diff origin/${{ github.event.pull_request.base.ref }} origin/${{ steps.extract_branch.outputs.branch }} -- $file)"
                   checkKeywords() {
                     local code="${1}"
-                    local currencies=("INR" "Ruppees" "RM" "MYR" "USD")
+                    local currencies=("INR" "RM" "MYR" "USD")
                     local currencySymbols=("\\₹")
-                    local regionSpecificWords=("RBI" "GST" "CIN")
+                    local regionSpecificWords=("RBI" "GST" "CIN" "Ruppees")
                     local linesToBeIgnored=("import")
                     local new_lines=()
                     local errors=()
@@ -95,6 +95,7 @@ jobs:
                         match=$(echo "$lineWithoutComments" | grep -P "$regex")
                         if [[ -n "$match" ]]; then
                           shouldLineBeIgnored=1
+                          echo "match found line to be ignored: $lineWithoutComments"
                           break
                         fi
                       done
