@@ -3,6 +3,7 @@ import {currencies} from "utils-file"
 import INR from "currency-utils";
 
 // Supported currencies are INR, MYR and USD
+// Supported keywords are RBI, Ruppees and SBI
 
 export default function Linter(){
   const indianCurrency = currencies.INR;
