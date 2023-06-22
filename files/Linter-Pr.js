@@ -1,3 +1,4 @@
+/* ignore-i18n-linter */
 import React, { useState } from 'react';
 import {currencies} from "utils-file"
 import INR from "currency-utils";

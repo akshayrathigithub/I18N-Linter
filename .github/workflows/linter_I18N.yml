@@ -193,6 +193,7 @@ jobs:
 
                         if [[ -n "$nextLineMatch" ]]; then
                           nextLineIgnore=1
+                          echo "$nextLineIgnore next Line Ignore"
                         fi
                       done
                       printf '%s\n' "${errors[@]}"
