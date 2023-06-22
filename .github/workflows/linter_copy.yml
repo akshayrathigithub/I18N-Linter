@@ -1,0 +1,111 @@
+name: I18N-Linter
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  file_changes:
+    name: Razorpay I18N Linter
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Extract branch name
+        id: extract_branch
+        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_ENV
+
+      - name: Get changed files
+        id: changed-files
+        run: |
+          if [[ ${{ github.event_name }} == 'pull_request' ]]; then
+            echo "changed_files=$(git diff --name-only --line-prefix=$(git rev-parse --show-toplevel)/ -r HEAD^1 HEAD | xargs)" >> $GITHUB_ENV
+          else
+            echo "changed_files=$(git diff --name-only --line-prefix=$(git rev-parse --show-toplevel)/ ${{ github.event.before }} ${{ github.event.after }} | xargs)" >> $GITHUB_ENV
+          fi
+
+      - name: Running-I18N-Linter
+        id: text-files
+        run: |
+          checkKeywords() {
+            local file="$1"
+            local original_content
+            local content_diff
+            local currency_error_msg="Hardcoded currency {} found, please use currency from User model file something like- props.user.merchant.currency"
+            local symbol_error_msg="Avoid hardcoding currency symbols instead import symbols from rzp-utils file"
+            local text_error_msg="Region-specific keyword detected, please use generic terms as we also support multiple regions merchants who might not be aware of {} keyword"
+            local warning_title="Razorpay/I18N-Linter"
+
+            original_content=$(cat "$file")
+            content_diff=$(git diff origin/${{ github.event.pull_request.base.ref }} origin/${{ steps.extract_branch.outputs.branch }} -- "$file")
+
+            # Helper function to check if a line should be ignored
+            shouldIgnoreLine() {
+              local line="$1"
+              local ignore_keywords=("import")
+              local ignore_directives=("ignore-i18n-linter" "ignore-i18n-linter-next-line" "ignore-i18n-linter-start" "ignore-i18n-linter-end")
+              local ignore_line_match
+              local ignore_directive
+
+              for ignore_directive in "${ignore_directives[@]}"; do
+                ignore_line_match=$(echo "$line" | grep -P "^\s*((\/\/)|(\/\*))\s*($ignore_directive)")
+                if [[ -n "$ignore_line_match" ]]; then
+                  return 0
+                fi
+              done
+
+              for keyword in "${ignore_keywords[@]}"; do
+                if [[ $line == *"$keyword"* ]]; then
+                  return 0
+                fi
+              done
+
+              return 1
+            }
+
+            while IFS= read -r line || [[ -n "$line" ]]; do
+              if ! shouldIgnoreLine "$line"; then
+                local words=()
+                IFS=' ' read -r -a words <<< "$line"
+
+                for word in "${words[@]}"; do
+                  if [[ $word =~ \.(.*)$ ]]; then
+                    local extension="${BASH_REMATCH[1]}"
+                    if [[ $extension =~ ^(js|jsx|ts|tsx|html)$ ]]; then
+                      if [[ $word =~ (INR|RM|MYR|USD) ]]; then
+                        echo "::warning file=$file,line=$LINENO,col=15,title=$warning_title::$currency_error_msg"
+                      elif [[ $word =~ (\\₹) ]]; then
+                        echo "::warning file=$file,line=$LINENO,col=15,title=$warning_title::$symbol_error_msg"
+                      elif [[ $word =~ (RBI|GST|CIN|Ruppees) ]]; then
+                        echo "::warning file=$file,line=$LINENO,col=15,title=$warning_title::$text_error_msg"
+                      fi
+                    fi
+                  fi
+                done
+              fi
+            done < "$file"
+          }
+
+          for file in ${{ steps.changed-files.outputs.changed_files }}; do
+            if ! [[ $file == *".github"* || $file == *"__test__"* ]]; then
+              if [[ ${{ steps.extract_branch.outputs.branch }} != revert-* && ${{ steps.extract_branch.outputs.branch }} != skiplint-* ]]; then
+                if [[ $file =~ \.(js|jsx|ts|tsx|html)$ ]]; then
+                  echo "Linter now running on file: $file"
+                  checkKeywords "$file"
+                else
+                  echo "Linter will ignore file: $file"
+                fi
+              else
+                echo "Linter will ignore file: $file"
+              fi
+            else
+              echo "Linter will ignore file: $file"
+            fi
+          done
