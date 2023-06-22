@@ -94,6 +94,7 @@ jobs:
           }
 
           if [ "$steps.extract_branch.outputs.branch" != "revert-*" ] && [ "$steps.extract_branch.outputs.branch" != "skiplint-*" ]; then
+            echo "Valid Branch"
             for file in ${{ steps.changed-files.outputs.changed_files }}; do
               if ! [[ "$file" =~ \.github.* || "$file" =~ __test__ ]]; then
                 if [[ "$file" =~ \.(js|jsx|ts|tsx|html)$ ]]; then
