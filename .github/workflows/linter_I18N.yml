@@ -98,8 +98,8 @@ jobs:
                     wholeFileIgnoreRegex="^\\s*((\\/\\/)|(\\/\\*))\\s*($wholeFileIgnore)"
                     firstLineText="${new_lines[0]}"
                     firstLineMatch=$(echo "$firstLineText" | grep -P "$wholeFileIgnoreRegex")
-                    betweenLinesIgnore=0
-                    nextLineIgnore=0
+                    isBetweenLinesIgnore=0
+                    isNextLineIgnore=0
                     startIgnoreRegex="^\\s*((\\/\\/)|(\\/\\*))\\s*($startIgnore)"
                     endIgnoreRegex="^\\s*((\\/\\/)|(\\/\\*))\\s*($endIgnore)"
                     nextLineIgnoreRegex="^\\s*((\\/\\/)|(\\/\\*))\\s*($nextLineIgnore)"
@@ -110,7 +110,7 @@ jobs:
                         endLineMatch=$(echo "$line" | grep -P "$endIgnoreRegex")
                         nextLineMatch=$(echo "$line" | grep -P "$nextLineIgnoreRegex")
                         if [[ -n "$startLineMatch" ]]; then
-                          betweenLinesIgnore=1
+                          isBetweenLinesIgnore=1
                         fi
                         local lineWithoutComments=$(echo "$line" | sed -E 's/\/\/.*|\/\*[^*]*\*\///g')
                         local shouldLineBeIgnored=0
@@ -123,7 +123,7 @@ jobs:
                           fi
                         done
 
-                        if [ $shouldLineBeIgnored -eq 0 ] && [ $betweenLinesIgnore -eq 0 ]&& [ $nextLineIgnore -eq 0 ]; then
+                        if [ $shouldLineBeIgnored -eq 0 ] && [ $isBetweenLinesIgnore -eq 0 ] && [ $isNextLineIgnore -eq 0 ]; then
                           local words=()
 
                           IFS=' ' read -r -a words <<< "$lineWithoutComments"
@@ -184,16 +184,15 @@ jobs:
                           done
                         fi
                         if [[ -n "$endLineMatch" ]]; then
-                          betweenLinesIgnore=0
+                          isBetweenLinesIgnore=0
                         fi
 
-                        if [ $nextLineIgnore -eq 1 ]; then
-                        nextLineIgnore=0
+                        if [ $isNextLineIgnore -eq 1 ]; then
+                          isNextLineIgnore=0
                         fi
 
                         if [[ -n "$nextLineMatch" ]]; then
-                          nextLineIgnore=1
-                          echo "$nextLineIgnore next Line Ignore"
+                          isNextLineIgnore=1
                         fi
                       done
                       printf '%s\n' "${errors[@]}"
