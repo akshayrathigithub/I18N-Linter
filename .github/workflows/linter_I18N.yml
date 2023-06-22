@@ -28,7 +28,6 @@ jobs:
         run: |
             if ${{ github.event_name == 'pull_request' }}; then
                 echo "changed_files=$(git diff --name-only --line-prefix=`git rev-parse --show-toplevel`/ -r HEAD^1 HEAD | xargs)" >> $GITHUB_OUTPUT
-                echo "$changed_files Changed-Files"
             else
                 echo "changed_files=$(git diff --name-only --line-prefix=`git rev-parse --show-toplevel`/ ${{ github.event.before }} ${{ github.event.after }} | xargs)" >> $GITHUB_OUTPUT
             fi
@@ -200,6 +199,7 @@ jobs:
                     fi
                   }
                   errors=$(checkKeywords "$original_content")
+                  echo "${{ steps.changed-files.outputs.changed_files }}"
                   if [[ -n $errors ]]; then
                     while IFS= read -r error; do
                       echo "$error" >&2
