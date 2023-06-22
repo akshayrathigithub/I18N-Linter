@@ -103,12 +103,12 @@ jobs:
                     startIgnoreRegex="^\\s*((\\/\\/)|(\\/\\*))\\s*($startIgnore)"
                     endIgnoreRegex="^\\s*((\\/\\/)|(\\/\\*))\\s*($endIgnore)"
                     nextLineIgnoreRegex="^\\s*((\\/\\/)|(\\/\\*))\\s*($nextLineIgnore)"
-                    nextLineMatch=$(echo "$firstLineText" | grep -P "$nextLineIgnoreRegex")
                     if [[ ! -n "$firstLineMatch" ]]; then
                       for ((i = 0; i < ${#new_lines[@]}; i++)); do
                         local line="${new_lines[i]}"
                         startLineMatch=$(echo "$line" | grep -P "$startIgnoreRegex")
                         endLineMatch=$(echo "$line" | grep -P "$endIgnoreRegex")
+                        nextLineMatch=$(echo "$line" | grep -P "$nextLineIgnoreRegex")
                         if [[ -n "$startLineMatch" ]]; then
                           betweenLinesIgnore=1
                         fi
