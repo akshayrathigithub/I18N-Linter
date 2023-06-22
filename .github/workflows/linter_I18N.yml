@@ -84,6 +84,10 @@ jobs:
                     local currencySymbols=("\\₹")
                     local regionSpecificWords=("RBI" "GST" "CIN" "Ruppees")
                     local linesToBeIgnored=("import")
+                    local wholeFileIgnore="ignore-i18n-linter"
+                    local nextLineIgnore="ignore-i18n-linter-next-line"
+                    local startIgnore="ignore-i18n-linter-start"
+                    local endIgnore="ignore-i18n-linter-end"
                     local new_lines=()
                     local errors=()
                     
@@ -91,82 +95,108 @@ jobs:
                       new_lines+=("$line")
                     done < "$file"
 
-                    for ((i = 0; i < ${#new_lines[@]}; i++)); do
-                      local line="${new_lines[i]}"
-                      local lineWithoutComments=$(echo "$line" | sed -E 's/\/\/.*|\/\*[^*]*\*\///g')
-                      local shouldLineBeIgnored=0
-                      for term in "${linesToBeIgnored[@]}"; do
-                        regex="\\b$term\\b"
-                        match=$(echo "$lineWithoutComments" | grep -P "$regex")
-                        if [[ -n "$match" ]]; then
-                          shouldLineBeIgnored=1
-                          break
+                    wholeFileIgnoreRegex="^\\s*((\\/\\/)|(\\/\\*))\\s*($wholeFileIgnore)"
+                    firstLineText="${new_lines[0]}"
+                    firstLineMatch=$(echo "$firstLineText" | grep -P "$wholeFileIgnoreRegex")
+                    betweenLinesIgnore=0
+                    nextLineIgnore=0
+                    startIgnoreRegex="^\\s*((\\/\\/)|(\\/\\*))\\s*($startIgnore)"
+                    endIgnoreRegex="^\\s*((\\/\\/)|(\\/\\*))\\s*($endIgnore)"
+                    nextLineIgnoreRegex="^\\s*((\\/\\/)|(\\/\\*))\\s*($nextLineIgnore)"
+                    nextLineMatch=$(echo "$firstLineText" | grep -P "$nextLineIgnoreRegex")
+                    if [[ ! -n "$firstLineMatch" ]]; then
+                      for ((i = 0; i < ${#new_lines[@]}; i++)); do
+                        local line="${new_lines[i]}"
+                        startLineMatch=$(echo "$line" | grep -P "$startIgnoreRegex")
+                        endLineMatch=$(echo "$line" | grep -P "$endIgnoreRegex")
+                        if [[ -n "$startLineMatch" ]]; then
+                          betweenLinesIgnore=1
+                        fi
+                        local lineWithoutComments=$(echo "$line" | sed -E 's/\/\/.*|\/\*[^*]*\*\///g')
+                        local shouldLineBeIgnored=0
+                        for term in "${linesToBeIgnored[@]}"; do
+                          regex="\\b$term\\b"
+                          match=$(echo "$lineWithoutComments" | grep -P "$regex")
+                          if [[ -n "$match" ]]; then
+                            shouldLineBeIgnored=1
+                            break
+                          fi
+                        done
+
+                        if [ $shouldLineBeIgnored -eq 0 ] && [ $betweenLinesIgnore -eq 0 ]&& [ $nextLineIgnore -eq 0 ]; then
+                          local words=()
+
+                          IFS=' ' read -r -a words <<< "$lineWithoutComments"
+
+                          for word in "${words[@]}"; do
+                            hasMatch() {
+                              local pattern="$1"
+                              local type="$2"
+                              local keyword="$3"
+                              local regex
+                              regex="$pattern"
+                              local match
+                              match=$(echo "$word" | grep -P "$regex")
+                              local warning_title="Razorpay/I18N-Linter"
+
+                              if [[ -n "$match" ]]; then
+                                local currency_error_msg
+                                local symbol_error_msg
+                                local text_error_msg
+                                local warning_msg
+                                
+                                case "$type" in
+                                  "currency")
+                                      currency_error_msg="Hard coded currency {} found, please use currency from User model file something like- props.user.merchant.currency"
+                                      warning_msg="${currency_error_msg//\{\}/$keyword}"
+                                      warning_title="Region specific currency detected"
+                                      ;;
+                                  "symbol")
+                                      symbol_error_msg="Avoid hardcoding currency symbols instead import symbols from rzp-utils file"
+                                      warning_msg="$symbol_error_msg"
+                                      warning_title="Region specific symbol detected"
+                                      ;;
+                                  "text")
+                                      text_error_msg="Region specific keyword detected, please use genric term as we are also supporting multiple regions merchant who might be not aware of {} keyword"
+                                      warning_msg="${text_error_msg//\{\}/$keyword}"
+                                      warning_title="Region specific keyword detected"
+                                      ;;
+                                  *)
+                                      warning_msg="Region specific text detected, please take approval from i18n team for this change"
+                                      ;;
+                                esac
+
+                                echo "::warning file=$file,line=$((i + 1)),col=15,title=$warning_title::$warning_msg"
+                              fi
+                            }
+
+                            for keyword in "${regionSpecificWords[@]}"; do
+                                hasMatch "\\b(?<!\\.)$keyword\\b" "text" "$keyword"
+                            done
+
+                            for symbol in "${currencySymbols[@]}"; do
+                                hasMatch "$symbol" "symbol" "$symbol"
+                            done
+
+                            for currency in "${currencies[@]}"; do
+                                hasMatch "\\b(?<!\\.)$currency\\b" "currency" "$currency"
+                            done
+                          done
+                        fi
+                        if [[ -n "$endLineMatch" ]]; then
+                          betweenLinesIgnore=0
+                        fi
+
+                        if [ $nextLineIgnore -eq 1 ]; then
+                        nextLineIgnore=0
+                        fi
+
+                        if [[ -n "$nextLineMatch" ]]; then
+                          nextLineIgnore=1
                         fi
                       done
-
-                      if [ $shouldLineBeIgnored -eq 0 ]; then
-                        local words=()
-
-                        IFS=' ' read -r -a words <<< "$lineWithoutComments"
-
-                        for word in "${words[@]}"; do
-                          hasMatch() {
-                            local pattern="$1"
-                            local type="$2"
-                            local keyword="$3"
-                            local regex
-                            regex="$pattern"
-                            local match
-                            match=$(echo "$word" | grep -P "$regex")
-                            local warning_title="Razorpay/I18N-Linter"
-
-                            if [[ -n "$match" ]]; then
-                              local currency_error_msg
-                              local symbol_error_msg
-                              local text_error_msg
-                              local warning_msg
-                              
-                              case "$type" in
-                                "currency")
-                                    currency_error_msg="Hard coded currency {} found, please use currency from User model file something like- props.user.merchant.currency"
-                                    warning_msg="${currency_error_msg//\{\}/$keyword}"
-                                    warning_title="Region specific currency detected"
-                                    ;;
-                                "symbol")
-                                    symbol_error_msg="Avoid hardcoding currency symbols instead import symbols from rzp-utils file"
-                                    warning_msg="$symbol_error_msg"
-                                    warning_title="Region specific symbol detected"
-                                    ;;
-                                "text")
-                                    text_error_msg="Region specific keyword detected, please use genric term as we are also supporting multiple regions merchant who might be not aware of {} keyword"
-                                    warning_msg="${text_error_msg//\{\}/$keyword}"
-                                    warning_title="Region specific keyword detected"
-                                    ;;
-                                *)
-                                    warning_msg="Region specific text detected, please take approval from i18n team for this change"
-                                    ;;
-                              esac
-
-                              echo "::warning file=$file,line=$((i + 1)),col=15,title=$warning_title::$warning_msg"
-                            fi
-                          }
-
-                          for keyword in "${regionSpecificWords[@]}"; do
-                              hasMatch "\\b(?<!\\.)$keyword\\b" "text" "$keyword"
-                          done
-
-                          for symbol in "${currencySymbols[@]}"; do
-                              hasMatch "$symbol" "symbol" "$symbol"
-                          done
-
-                          for currency in "${currencies[@]}"; do
-                              hasMatch "\\b(?<!\\.)$currency\\b" "currency" "$currency"
-                          done
-                        done
-                      fi
-                    done
-
-                    printf '%s\n' "${errors[@]}"
+                      printf '%s\n' "${errors[@]}"
+                    fi
                   }
                   errors=$(checkKeywords "$original_content")
                   if [[ -n $errors ]]; then
