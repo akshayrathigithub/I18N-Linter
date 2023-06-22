@@ -15,7 +15,7 @@ export default function Linter(){
   if(indianCurrency === "MYR"){
     return (<div>This is a RBI testing account</div>)
   }
-// ignore-i18n-linter-start
+// ignore-i18n-linter-end
 
 if(indianCurrency === "USD"){
     return(<div>
