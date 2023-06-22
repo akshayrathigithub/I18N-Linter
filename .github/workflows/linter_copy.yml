@@ -95,7 +95,6 @@ jobs:
 
           if [ "$steps.extract_branch.outputs.branch" != "revert-*" ] && [ "$steps.extract_branch.outputs.branch" != "skiplint-*" ]; then
             for file in ${{ steps.changed-files.outputs.changed_files }}; do
-              echo "${{ steps.changed-files.outputs.changed_files }} $file FILE"
               if ! [[ "$file" =~ \.github.* || "$file" =~ __test__ ]]; then
                 if [[ "$file" =~ \.(js|jsx|ts|tsx|html)$ ]]; then
                   echo "Linter now running on file: $file"
