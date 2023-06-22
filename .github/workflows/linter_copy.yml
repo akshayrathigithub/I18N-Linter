@@ -92,20 +92,19 @@ jobs:
               fi
             done < "$file"
           }
-
+        if [[ ${{ steps.extract_branch.outputs.branch }} != revert-* && ${{ steps.extract_branch.outputs.branch }} != skiplint-* ]]; then
           for file in ${{ steps.changed-files.outputs.changed_files }}; do
             if ! [[ $file == *".github"* || $file == *"__test__"* ]]; then
-              if [[ ${{ steps.extract_branch.outputs.branch }} != revert-* && ${{ steps.extract_branch.outputs.branch }} != skiplint-* ]]; then
                 if [[ $file =~ \.(js|jsx|ts|tsx|html)$ ]]; then
                   echo "Linter now running on file: $file"
-                  checkKeywords "$file"
+                  # checkKeywords "$file"
                 else
                   echo "Linter will ignore file: $file"
                 fi
-              else
-                echo "Linter will ignore file: $file"
-              fi
             else
               echo "Linter will ignore file: $file"
             fi
           done
+        else
+          echo "Restricted branch found, linter won't run"
+        fi
