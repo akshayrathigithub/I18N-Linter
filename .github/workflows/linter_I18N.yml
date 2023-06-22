@@ -203,6 +203,7 @@ jobs:
                     while IFS= read -r error; do
                       echo "$error" >&2
                     done <<< "$errors"
+                    exit 1
                   else
                     echo "No hardcoding related to I18N found."
                   fi
