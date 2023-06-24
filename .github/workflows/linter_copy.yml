@@ -75,14 +75,17 @@ jobs:
             shouldIgnoreWholeFile(){
               local regex="^\\s*((\\/\\/)|(\\/\\*))\\s*(${ignore_linter_directives[0]})"
               local is_first_line_matched=$(echo "${file_content[0]}" | grep -P "$regex")
-              if [[ ! -n "$is_first_line_matched" ]]; then
+              if [[ -n "$is_first_line_matched" ]]; then
                 return 0
               fi
               return 1
             }
 
             linterIgnore() {
-              [[ $1 =~ $2 ]]
+              if [ $1 =~ $2 ]; then
+                return 0
+              fi
+              return 1
             }
 
             if [ $shouldIgnoreWholeFile -eq 1 ]; then
@@ -135,10 +138,12 @@ jobs:
                 if [[ "$file" =~ \.(js|jsx|ts|tsx|html)$ ]]; then
                   checkKeywords "$file"
                 else
-                  echo "Unsupported file extension found, linter wont be running on file: $file \n\n"
+                  echo "Unsupported file extension found, linter wont be running on file: $file"
+                  printf "\n \n"
                 fi
               else
-                echo "File is a part of folder which have been flaged to be ignored, hence linter will ignore file: $file \n\n"
+                echo "File is a part of folder which have been flaged to be ignored, hence linter will ignore file: $file"
+                printf "\n \n"
               fi
             done
           else
