@@ -82,11 +82,9 @@ jobs:
                 line_text="${file_content[i]}"
                 next_line_linter_ignore=$(linterIgnore "$line_text" "${ignore_linter_directives[1]}")
                 
-                linterIgnore "$line_text" "${ignore_linter_directives[2]}"
-                start_line_linter_ignore=$?
+                start_line_linter_ignore=$(linterIgnore "$line_text" "${ignore_linter_directives[2]}")
 
-                linterIgnore "$line_text" "${ignore_linter_directives[3]}"
-                end_line_linter_ignore=$?
+                end_line_linter_ignore=$(linterIgnore "$line_text" "${ignore_linter_directives[3]}")
                 
                 next_line_linter_ignore_flag=0
                 between_line_linter_ignore_flag=0
