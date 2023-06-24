@@ -70,6 +70,7 @@ jobs:
               local ignore_text=$2
               local regex="^\\s*((\\/\\/)|(\\/\\*))\\s*($ignore_text)"
               local match_found=$(echo "$line_text" | grep -P "$regex")
+              echo "$line_text $ignore_text first line"
               if [[ -n "$match_found" ]]; then
                 echo "match found $line_text"
                 return 1
