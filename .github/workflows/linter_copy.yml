@@ -55,15 +55,13 @@ jobs:
               local regex="^\\s*((\\/\\/)|(\\/\\*))\\s*(${ignore_linter_directives[0]})"
               local is_first_line_matched=$(echo "${file_content[0]}" | grep -P "$regex")
               if [[ -n "$is_first_line_matched" ]]; then
-                echo "Hello ZERO"
                 return 0
               fi
-              echo "Hello ONE"
               return 1
             }
 
             linterIgnore() {
-              if [ $1 =~ $2 ]; then
+              if [[ $1 =~ $2 ]]; then
                 return 0
               fi
               return 1
