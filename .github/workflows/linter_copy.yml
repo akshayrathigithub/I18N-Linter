@@ -65,18 +65,17 @@ jobs:
               return 0
             }
 
+            linterIgnore() {
+              echo "function called"
+              if [[ $1 =~ $2 ]]; then
+                return 0
+              fi
+              return 1
+            }
+
             if shouldIgnoreWholeFile; then
               echo "Linter now scanning code on file:$file"
               for ((i = 0; i < ${#file_content[@]}; i++)); do
-                linterIgnore() {
-                  echo "LINTER IGNORE $1 $2"
-                  if [[ $1 =~ $2 ]]; then
-                    echo "ZERO"
-                    return 0
-                  fi
-                  echo "ONE"
-                  return 1
-                }
                 line_text="${file_content[i]}"
                 echo "$line_text file I"
                 linterIgnore "$line_text" "${ignore_linter_directives[1]}"
