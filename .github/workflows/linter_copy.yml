@@ -50,34 +50,15 @@ jobs:
             done < "$file"
 
             # Helper function to check if a line should be ignored
-            shouldIgnoreLine() {
-              local line="$1"
-              local ignore_keywords=("import")
-              local ignore_line_match
-              local ignore_directive
-
-              for ignore_directive in "${ignore_directives[@]}"; do
-                ignore_line_match=$(echo "$line" | grep -P "^\s*((\/\/)|(\/\*))\s*($ignore_directive)")
-                if [[ -n "$ignore_line_match" ]]; then
-                  return 0
-                fi
-              done
-
-              for keyword in "${ignore_keywords[@]}"; do
-                if [[ $line == *"$keyword"* ]]; then
-                  return 0
-                fi
-              done
-
-              return 1
-            }
 
             shouldIgnoreWholeFile() {
               local regex="^\\s*((\\/\\/)|(\\/\\*))\\s*(${ignore_linter_directives[0]})"
               local is_first_line_matched=$(echo "${file_content[0]}" | grep -P "$regex")
               if [[ -n "$is_first_line_matched" ]]; then
+                echo "Hello ZERO"
                 return 0
               fi
+              echo "Hello ONE"
               return 1
             }
 
@@ -89,7 +70,7 @@ jobs:
             }
             should_ignore_whole_file=$(shouldIgnoreWholeFile)
             echo "$should_ignore_whole_file should_ignore_whole_file"
-            if [[ $should_ignore_whole_file -eq 1 ]]; then
+            if [ $should_ignore_whole_file -eq 1 ]; then
               echo "Linter now scanning code on file:$file"
               for ((i = 0; i < ${#file_content[@]}; i++)); do
                 line_text="${new_lines[i]}"
