@@ -73,7 +73,7 @@ jobs:
               if [[ -n "$match_found" ]]; then
                 return 1
               fi
-              return 0
+              return 2
             }
 
             if shouldIgnoreWholeFile; then
