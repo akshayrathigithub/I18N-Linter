@@ -66,7 +66,11 @@ jobs:
             }
 
             linterIgnore() {
-              if [[ $1 =~ $2 ]]; then
+              local line_text=$2
+              local ignore_text=$2
+              local regex="^\\s*((\\/\\/)|(\\/\\*))\\s*($ignore_text)"
+              local match_found=$(echo "$line_text" | grep -P "$regex")
+              if [[ -n "$match_found" ]]; then
                 return 1
               fi
               return 0
