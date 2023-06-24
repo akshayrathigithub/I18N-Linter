@@ -38,6 +38,11 @@ jobs:
             local file="$1"
             local original_content=$(cat "$file")
             local content_diff=$(git diff origin/${{ github.event.pull_request.base.ref }} origin/${{ steps.extract_branch.outputs.branch }} -- "$file")
+            local error_msg=(
+              "Hardcoded currency {} found, please use currency from User model file something like- props.user.merchant.currency"
+              "Region-specific keyword detected, please use generic terms as we also support multiple regions merchants who might not be aware of {} keyword"
+              "Avoid hardcoding currency symbols instead import symbols from rzp-utils file"
+            )
             local currency_error_msg="Hardcoded currency {} found, please use currency from User model file something like- props.user.merchant.currency"
             local symbol_error_msg="Avoid hardcoding currency symbols instead import symbols from rzp-utils file"
             local text_error_msg="Region-specific keyword detected, please use generic terms as we also support multiple regions merchants who might not be aware of {} keyword"
@@ -74,6 +79,9 @@ jobs:
                 next_line_linter_ignore=$(linterIgnore "$line_text" "${ignore_linter_directives[1]}")
                 start_line_linter_ignore=$(linterIgnore "$line_text" "${ignore_linter_directives[2]}")
                 end_line_linter_ignore=$(linterIgnore "$line_text" "${ignore_linter_directives[3]}")
+                echo "$next_line_linter_ignore next_line_linter_ignore"
+                echo "$start_line_linter_ignore start_line_linter_ignore"
+                echo "$end_line_linter_ignore end_line_linter_ignore"
                 next_line_linter_ignore_flag=0
                 between_line_linter_ignore_flag=0
                 if [ $start_line_linter_ignore -eq 0 ]; then
