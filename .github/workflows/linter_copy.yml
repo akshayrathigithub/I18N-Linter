@@ -92,7 +92,7 @@ jobs:
                 if [ $start_line_linter_ignore -eq 1 ]; then
                   echo "start line linter ignore comment detected"
                   between_line_linter_ignore_flag=1
-                elif [ $next_line_linter_ignore -eq 1 ]; then
+                elif [[ $next_line_linter_ignore -eq 1 ]]; then
                   echo "next line linter ignore comment detected"
                   next_line_linter_ignore_flag=1
                 elif [ $next_line_linter_ignore_flag -eq 1 ]; then
