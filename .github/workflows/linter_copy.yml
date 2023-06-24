@@ -120,7 +120,7 @@ jobs:
               done
             else
               echo "Whole file ignore comment found, aborting linter run on file: $file"
-              printf "\n \n"
+              printf "\n"
             fi
           }
 
@@ -131,11 +131,11 @@ jobs:
                   checkKeywords "$file"
                 else
                   echo "Unsupported file extension found, linter wont be running on file: $file"
-                  printf "\n \n"
+                  printf "\n"
                 fi
               else
                 echo "File is a part of folder which have been flaged to be ignored, hence linter will ignore file: $file"
-                printf "\n \n"
+                printf "\n"
               fi
             done
           else
