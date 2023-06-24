@@ -94,9 +94,10 @@ jobs:
             done < "$file"
           }
 
-          if [ "$steps.extract_branch.outputs.branch" != "revert-*" ] && [ "$steps.extract_branch.outputs.branch" != "skiplint-*" ]; then
-            echo "${{ steps.changed-files.outputs.changed_files }} ${{ steps.changed-files.outputs.changed_files }} HELLo"
+          # if [ "$steps.extract_branch.outputs.branch" != "revert-*" ] && [ "$steps.extract_branch.outputs.branch" != "skiplint-*" ]; then
+          #   echo "${{ steps.changed-files.outputs.changed_files }} ${{ steps.changed-files.outputs.changed_files }} HELLo"
             for file in ${{ steps.changed-files.outputs.changed_files }}; do
+              echo "${{ steps.changed-files.outputs.changed_files }} ${{ steps.changed-files.outputs.changed_files }} HELLo"
               if ! [[ "$file" =~ \.github.* || "$file" =~ __test__ ]]; then
                 if [[ "$file" =~ \.(js|jsx|ts|tsx|html)$ ]]; then
                   echo "Linter now running on file: $file"
@@ -108,7 +109,7 @@ jobs:
                 echo "Linter will ignore file: $file"
               fi
             done
-          else
-            echo "Restricted branch found, linter won't run"
-          fi
+          # else
+          #   echo "Restricted branch found, linter won't run"
+          # fi
 
