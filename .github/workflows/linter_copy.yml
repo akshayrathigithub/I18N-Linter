@@ -67,7 +67,7 @@ jobs:
             }
 
             should_ignore_whole_file=$(checkAgainstRegex "${file_content[0]}" "^\\s*((\\/\\/)|(\\/\\*))\\s*(${ignore_linter_directives[0]})")
-            if [ $should_ignore_whole_file -eq 1 ]; then
+            if [ $should_ignore_whole_file -eq 0 ]; then
               echo "Linter now scanning code on file:$file"
               between_line_linter_ignore_flag=0
               next_line_linter_ignore_flag=0
