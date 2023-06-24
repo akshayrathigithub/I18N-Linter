@@ -87,8 +87,8 @@ jobs:
               fi
               return 1
             }
-
-            if [ $shouldIgnoreWholeFile -eq 1 ]; then
+            should_ignore_whole_file=$(shouldIgnoreWholeFile)
+            if [ $should_ignore_whole_file -eq 1 ]; then
               echo "Linter now scanning code on file:$file"
               for ((i = 0; i < ${#file_content[@]}; i++)); do
                 line_text="${new_lines[i]}"
@@ -129,6 +129,7 @@ jobs:
               done
             else
               echo "Whole file ignore comment found, aborting linter run on file: $file"
+              printf "\n \n"
             fi
           }
 
