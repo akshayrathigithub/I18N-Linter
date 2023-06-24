@@ -88,7 +88,6 @@ jobs:
                 start_line_linter_ignore=$(linterIgnore "$line_text" "${ignore_linter_directives[2]}")
 
                 end_line_linter_ignore=$(linterIgnore "$line_text" "${ignore_linter_directives[3]}")
-                echo "$end_line_linter_ignore end_line_linter_ignore"
 
                 if [ $start_line_linter_ignore -eq 1 ]; then
                   echo "start line linter ignore comment detected"
