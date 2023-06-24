@@ -105,20 +105,20 @@ jobs:
                   local words=()
                   local warning_msg
                   IFS=' ' read -r -a words <<< "$line_text"
-                  echo "$lineWithoutComments"
+
                   for word in "${words[@]}"; do
                     if [[ $word =~ \.(.*)$ ]]; then
                       if [[ $word =~ (INR|RM|MYR|USD) ]]; then
                         warning_msg="${currency_error_msg//\{\}/$keyword}"
                         warning_title="Region specific currency detected"
-                        echo "::warning file=$file,line=$i,col=15,title=$warning_title::$warning_msg"
+                        echo "::warning file=$file,line=$(i+1),col=15,title=$warning_title::$warning_msg"
                       elif [[ $word =~ (\\₹) ]]; then
                         warning_title="Region specific symbol detected"
-                        echo "::warning file=$file,line=$i,col=15,title=$warning_title::$symbol_error_msg"
+                        echo "::warning file=$file,line=$(i+1),col=15,title=$warning_title::$symbol_error_msg"
                       elif [[ $word =~ (RBI|GST|CIN|Ruppees) ]]; then
                         warning_msg="${text_error_msg//\{\}/$keyword}"
                         warning_title="Region specific keyword detected"
-                        echo "::warning file=$file,line=$i,col=15,title=$warning_title::$warning_msg"
+                        echo "::warning file=$file,line=$(i+1),col=15,title=$warning_title::$warning_msg"
                       fi
                     fi
                   done
