@@ -77,16 +77,18 @@ jobs:
               echo "Linter now scanning code on file:$file"
               for ((i = 0; i < ${#file_content[@]}; i++)); do
                 line_text="${file_content[i]}"
-                echo "$line_text file I"
                 linterIgnore "$line_text" "${ignore_linter_directives[1]}"
                 next_line_linter_ignore=$?
-                echo "$next_line_linter_ignore next_line_linter_ignore"
-                start_line_linter_ignore=$(linterIgnore "$line_text" "Hello")
-                end_line_linter_ignore=$(linterIgnore "$line_text" "${ignore_linter_directives[3]}")
-                echo "$start_line_linter_ignore start_line_linter_ignore"
-                echo "$end_line_linter_ignore end_line_linter_ignore"
+                
+                linterIgnore "$line_text" "${ignore_linter_directives[2]}"
+                start_line_linter_ignore=$?
+
+                linterIgnore "$line_text" "${ignore_linter_directives[3]}"
+                end_line_linter_ignore=$?
+                
                 next_line_linter_ignore_flag=0
                 between_line_linter_ignore_flag=0
+
                 if [ $start_line_linter_ignore -eq 0 ]; then
                   echo "start line linter ignore comment detected"
                   start_line_linter_ignore=1
@@ -116,6 +118,7 @@ jobs:
                     fi
                   done
                 fi
+                echo "$line_text line_text"
               done
             else
               echo "Whole file ignore comment found, aborting linter run on file: $file"
