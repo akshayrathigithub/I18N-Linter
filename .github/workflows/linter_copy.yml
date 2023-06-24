@@ -79,7 +79,8 @@ jobs:
                 }
                 line_text="${file_content[i]}"
                 echo "$line_text file I"
-                next_line_linter_ignore=$(linterIgnore "$line_text" "${ignore_linter_directives[1]}")
+                linterIgnore "$line_text" "${ignore_linter_directives[1]}"
+                next_line_linter_ignore=$
                 echo "$next_line_linter_ignore next_line_linter_ignore"
                 start_line_linter_ignore=$(linterIgnore "$line_text" "${ignore_linter_directives[2]}")
                 end_line_linter_ignore=$(linterIgnore "$line_text" "${ignore_linter_directives[3]}")
