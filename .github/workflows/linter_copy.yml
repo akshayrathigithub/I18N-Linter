@@ -77,12 +77,12 @@ jobs:
             if shouldIgnoreWholeFile; then
               echo "Linter now scanning code on file:$file"
               for ((i = 0; i < ${#file_content[@]}; i++)); do
-                echo "${file_content[i]} file content I"
                 line_text="${file_content[i]}"
+                echo "$line_text file I"
                 next_line_linter_ignore=$(linterIgnore "$line_text" "${ignore_linter_directives[1]}")
+                echo "$next_line_linter_ignore next_line_linter_ignore"
                 start_line_linter_ignore=$(linterIgnore "$line_text" "${ignore_linter_directives[2]}")
                 end_line_linter_ignore=$(linterIgnore "$line_text" "${ignore_linter_directives[3]}")
-                echo "$next_line_linter_ignore next_line_linter_ignore"
                 echo "$start_line_linter_ignore start_line_linter_ignore"
                 echo "$end_line_linter_ignore end_line_linter_ignore"
                 next_line_linter_ignore_flag=0
