@@ -38,24 +38,23 @@ jobs:
             local file="$1"
             local original_content=$(cat "$file")
             local content_diff=$(git diff origin/${{ github.event.pull_request.base.ref }} origin/${{ steps.extract_branch.outputs.branch }} -- "$file")
-            local error_msg=(
+            local error_msg_list=(
               "Hardcoded currency {} found, please use currency from User model file something like- props.user.merchant.currency"
               "Region-specific keyword detected, please use generic terms as we also support multiple regions merchants who might not be aware of {} keyword"
               "Avoid hardcoding currency symbols instead import symbols from rzp-utils file"
             )
-            local currency_error_msg="Hardcoded currency {} found, please use currency from User model file something like- props.user.merchant.currency"
-            local symbol_error_msg="Avoid hardcoding currency symbols instead import symbols from rzp-utils file"
-            local text_error_msg="Region-specific keyword detected, please use generic terms as we also support multiple regions merchants who might not be aware of {} keyword"
             local ignore_linter_directives=("ignore-i18n-linter" "ignore-i18n-linter-next-line" "ignore-i18n-linter-start" "ignore-i18n-linter-end")
             local warning_title="Razorpay/I18N-Linter"
             local file_content=()
+            local currencies=("INR" "RM" "MYR" "USD")
+            local currencySymbols=("\\₹")
+            local regionSpecificWords=("RBI" "GST" "CIN" "Ruppees")
 
             while IFS= read -r line || [[ "$line" ]]; do
               file_content+=("$line")
             done < "$file"
 
             # Helper function to check if a line should be ignored
-
             shouldIgnoreWholeFile() {
               local regex="^\\s*((\\/\\/)|(\\/\\*))\\s*(${ignore_linter_directives[0]})"
               local is_first_line_matched=$(echo "${file_content[0]}" | grep -P "$regex")
@@ -74,6 +73,40 @@ jobs:
                 echo 1
               else
                 echo 0
+              fi
+            }
+
+            hasMatch() {
+              local regex="$1"
+              local type="$2"
+              local keyword="$3"
+              local line_number="$4"
+              local text_to_be_checked="$5"
+              local match=$(echo "$text_to_be_checked" | grep -P "$regex")
+
+              if [[ -n "$match" ]]; then
+                local error_msg
+                local warning_msg
+                
+                case "$type" in
+                  "currency")
+                      error_msg="${error_msg_list[0]}"
+                      warning_title="Region specific currency detected"
+                      ;;
+                  "symbol")
+                      error_msg="${error_msg_list[2]}"
+                      warning_title="Region specific symbol detected"
+                      ;;
+                  "text")
+                      error_msg="${error_msg_list[1]}"
+                      warning_title="Region specific text detected"
+                      ;;
+                  *)
+                      warning_msg="Region specific text detected, please take approval from i18n team for this change"
+                      ;;
+                esac
+                warning_msg="${error_msg//\{\}/$keyword}"
+                echo "::warning file=$file,line=$((line_number + 1)),col=15,title=$warning_title::$warning_msg"
               fi
             }
 
@@ -107,20 +140,17 @@ jobs:
                   IFS=' ' read -r -a words <<< "$line_text"
 
                   for word in "${words[@]}"; do
-                    if [[ $word =~ \.(.*)$ ]]; then
-                      if [[ $word =~ (INR|RM|MYR|USD) ]]; then
-                        warning_msg="${currency_error_msg//\{\}/$word}"
-                        warning_title="Region specific currency detected"
-                        echo "::warning file=$file,line=$(i+1),col=15,title=$warning_title::$warning_msg"
-                      elif [[ $word =~ (\\₹) ]]; then
-                        warning_title="Region specific symbol detected"
-                        echo "::warning file=$file,line=$(i+1),col=15,title=$warning_title::$symbol_error_msg"
-                      elif [[ $word =~ (RBI|GST|CIN|Ruppees) ]]; then
-                        warning_msg="${text_error_msg//\{\}/$word}"
-                        warning_title="Region specific keyword detected"
-                        echo "::warning file=$file,line=$(i+1),col=15,title=$warning_title::$warning_msg"
-                      fi
-                    fi
+                    for keyword in "${regionSpecificWords[@]}"; do
+                      hasMatch "\\b(?<!\\.)$keyword\\b" "text" "$keyword" "$i" "$word"
+                    done
+
+                    for symbol in "${currencySymbols[@]}"; do
+                      hasMatch "$symbol" "symbol" "$symbol" "$i" "$word"
+                    done
+
+                    for currency in "${currencies[@]}"; do
+                      hasMatch "\\b(?<!\\.)$currency\\b" "currency" "$currency" "$i" "$word"
+                    done
                   done
                 fi
               done
