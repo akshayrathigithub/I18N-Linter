@@ -115,7 +115,7 @@ jobs:
                           error_msg="${error_msg_list[1]}"
                           warning_msg="${error_msg//\{\}/$keyword}"
                           echo "::warning file=$file,line=$((i + 1)),col=15,title="Region specific text detected"::$warning_msg"
-                          error_count++
+                          error_count=error_count+1
                         fi
                       done
 
@@ -125,7 +125,7 @@ jobs:
                           error_msg="${error_msg_list[2]}"
                           warning_msg="${error_msg//\{\}/$symbol}"
                           echo "::warning file=$file,line=$((i + 1)),col=15,title="Region specific symbol detected"::$warning_msg"
-                          error_count++
+                          error_count=error_count+1
                         fi
                       done
 
@@ -135,7 +135,7 @@ jobs:
                           error_msg="${error_msg_list[0]}"
                           warning_msg="${error_msg//\{\}/$currency}"
                           echo "::warning file=$file,line=$((i + 1)),col=15,title="Region specific currency detected"::$warning_msg"
-                          error_count++
+                          error_count=error_count+1
                         fi
                       done
                     done
