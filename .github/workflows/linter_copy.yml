@@ -75,8 +75,8 @@ jobs:
 
             if shouldIgnoreWholeFile; then
               echo "Linter now scanning code on file:$file"
-              for ((LINENO = 0; LINENO < ${#file_content[@]}; LINENO++)); do
-                line_text="${file_content[LINENO]}"
+              for ((i = 0; i < ${#file_content[@]}; i++)); do
+                line_text="${file_content[i]}"
                 linterIgnore "$line_text" "${ignore_linter_directives[1]}"
                 next_line_linter_ignore=$?
                 
@@ -112,14 +112,14 @@ jobs:
                       if [[ $word =~ (INR|RM|MYR|USD) ]]; then
                         warning_msg="${currency_error_msg//\{\}/$keyword}"
                         warning_title="Region specific currency detected"
-                        echo "::warning file=$file,line=$LINENO,col=15,title=$warning_title::$warning_msg"
+                        echo "::warning file=$file,line=$i,col=15,title=$warning_title::$warning_msg"
                       elif [[ $word =~ (\\₹) ]]; then
                         warning_title="Region specific symbol detected"
-                        echo "::warning file=$file,line=$LINENO,col=15,title=$warning_title::$symbol_error_msg"
+                        echo "::warning file=$file,line=$i,col=15,title=$warning_title::$symbol_error_msg"
                       elif [[ $word =~ (RBI|GST|CIN|Ruppees) ]]; then
                         warning_msg="${text_error_msg//\{\}/$keyword}"
                         warning_title="Region specific keyword detected"
-                        echo "::warning file=$file,line=$LINENO,col=15,title=$warning_title::$warning_msg"
+                        echo "::warning file=$file,line=$i,col=15,title=$warning_title::$warning_msg"
                       fi
                     fi
                   done
