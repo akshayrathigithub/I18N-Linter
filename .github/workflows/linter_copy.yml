@@ -66,7 +66,6 @@ jobs:
             }
 
             linterIgnore() {
-              echo "function called"
               if [[ $1 =~ $2 ]]; then
                 return 1
               fi
@@ -89,16 +88,16 @@ jobs:
                 next_line_linter_ignore_flag=0
                 between_line_linter_ignore_flag=0
 
-                if [ $start_line_linter_ignore -eq 0 ]; then
+                if [ $start_line_linter_ignore -eq 1 ]; then
                   echo "start line linter ignore comment detected"
-                  start_line_linter_ignore=1
-                elif [ $next_line_linter_ignore -eq 0 ]; then
+                  between_line_linter_ignore_flag=1
+                elif [ $next_line_linter_ignore -eq 1 ]; then
                   echo "next line linter ignore comment detected"
                   next_line_linter_ignore_flag=1
                 elif [ $next_line_linter_ignore_flag -eq 1 ]; then
                   next_line_linter_ignore_flag=0
                 elif [ $between_line_linter_ignore_flag -eq 1 ]; then
-                  if [ $end_line_linter_ignore -eq 0 ]; then
+                  if [ $end_line_linter_ignore -eq 1 ]; then
                     between_line_linter_ignore_flag=0
                   fi
                 else
