@@ -36,21 +36,23 @@ jobs:
         run: |
           checkKeywords() {
             local file="$1"
-            local original_content
-            local content_diff
+            local original_content=$(cat "$file")
+            local content_diff=$(git diff origin/${{ github.event.pull_request.base.ref }} origin/${{ steps.extract_branch.outputs.branch }} -- "$file")
             local currency_error_msg="Hardcoded currency {} found, please use currency from User model file something like- props.user.merchant.currency"
             local symbol_error_msg="Avoid hardcoding currency symbols instead import symbols from rzp-utils file"
             local text_error_msg="Region-specific keyword detected, please use generic terms as we also support multiple regions merchants who might not be aware of {} keyword"
+            local ignore_linter_directives=("ignore-i18n-linter" "ignore-i18n-linter-next-line" "ignore-i18n-linter-start" "ignore-i18n-linter-end")
             local warning_title="Razorpay/I18N-Linter"
+            local file_content=()
 
-            original_content=$(cat "$file")
-            content_diff=$(git diff origin/${{ github.event.pull_request.base.ref }} origin/${{ steps.extract_branch.outputs.branch }} -- "$file")
+            while IFS= read -r line || [[ "$line" ]]; do
+              file_content+=("$line")
+            done < "$file"
 
             # Helper function to check if a line should be ignored
             shouldIgnoreLine() {
               local line="$1"
               local ignore_keywords=("import")
-              local ignore_directives=("ignore-i18n-linter" "ignore-i18n-linter-next-line" "ignore-i18n-linter-start" "ignore-i18n-linter-end")
               local ignore_line_match
               local ignore_directive
 
@@ -70,15 +72,47 @@ jobs:
               return 1
             }
 
-            while IFS= read -r line || [[ -n "$line" ]]; do
-              if ! shouldIgnoreLine "$line"; then
-                local words=()
-                IFS=' ' read -r -a words <<< "$line"
+            shouldIgnoreWholeFile(){
+              local regex="^\\s*((\\/\\/)|(\\/\\*))\\s*(${ignore_linter_directives[0]})"
+              local is_first_line_matched=$(echo "${file_content[0]}" | grep -P "$regex")
+              if [[ ! -n "$is_first_line_matched" ]]; then
+                return 0
+              fi
+              return 1
+            }
 
-                for word in "${words[@]}"; do
-                  if [[ $word =~ \.(.*)$ ]]; then
-                    local extension="${BASH_REMATCH[1]}"
-                    if [[ $extension =~ ^(js|jsx|ts|tsx|html)$ ]]; then
+            linterIgnore() {
+              [[ $1 =~ $2 ]]
+            }
+
+            if [ $shouldIgnoreWholeFile -eq 1 ]; then
+              echo "Linter now scanning code on file:$file"
+              for ((i = 0; i < ${#file_content[@]}; i++)); do
+                line_text="${new_lines[i]}"
+                next_line_linter_ignore=$(linterIgnore "$line_text" "${ignore_linter_directives[1]}")
+                start_line_linter_ignore=$(linterIgnore "$line_text" "${ignore_linter_directives[2]}")
+                end_line_linter_ignore=$(linterIgnore "$line_text" "${ignore_linter_directives[3]}")
+                next_line_linter_ignore_flag=0
+                between_line_linter_ignore_flag=0
+                if [ $start_line_linter_ignore -eq 0 ]; then
+                  echo "start line linter ignore comment detected"
+                  start_line_linter_ignore=1
+                elif [ $next_line_linter_ignore -eq 0 ]; then
+                  echo "next line linter ignore comment detected"
+                  next_line_linter_ignore_flag=1
+                elif [ $next_line_linter_ignore_flag -eq 1 ]; then
+                  next_line_linter_ignore_flag=0
+                elif [ $between_line_linter_ignore_flag -eq 1 ]; then
+                  if [ $next_line_linter_ignore -eq 0 ] ; then
+                    between_line_linter_ignore_flag=0
+                  fi
+                else
+                  local lineWithoutComments=$(echo "$line_text" | sed -E 's/\/\/.*|\/\*[^*]*\*\///g')
+                  local words=()
+                  IFS=' ' read -r -a words <<< "$line_text"
+
+                  for word in "${words[@]}"; do
+                    if [[ $word =~ \.(.*)$ ]]; then
                       if [[ $word =~ (INR|RM|MYR|USD) ]]; then
                         echo "::warning file=$file,line=$LINENO,col=15,title=$warning_title::$currency_error_msg"
                       elif [[ $word =~ (\\₹) ]]; then
@@ -87,27 +121,27 @@ jobs:
                         echo "::warning file=$file,line=$LINENO,col=15,title=$warning_title::$text_error_msg"
                       fi
                     fi
-                  fi
-                done
-              fi
-            done < "$file"
+                  done
+                fi
+              done
+            else
+              echo "Whole file ignore comment found, aborting linter run on file: $file"
+            fi
           }
 
           if [ "$steps.extract_branch.outputs.branch" != "revert-*" ] && [ "$steps.extract_branch.outputs.branch" != "skiplint-*" ]; then
             for file in ${{ steps.changed-files.outputs.changed_files }}; do
-              echo "$file FILE"
               if ! [[ "$file" =~ \.github.* || "$file" =~ __test__ ]]; then
                 if [[ "$file" =~ \.(js|jsx|ts|tsx|html)$ ]]; then
-                  echo "Linter now running on file: $file"
-                  # checkKeywords "$file"
+                  checkKeywords "$file"
                 else
-                  echo "Linter will ignore file: $file"
+                  echo "Unsupported file extension found, linter wont be running on file: $file \n\n"
                 fi
               else
-                echo "Linter will ignore file: $file"
+                echo "File is a part of folder which have been flaged to be ignored, hence linter will ignore file: $file \n\n"
               fi
             done
           else
-            echo "Restricted branch found, linter won't run"
+            echo "Restricted branch name found, linter won't run"
           fi
 
