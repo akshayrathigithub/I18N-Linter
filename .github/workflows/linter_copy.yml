@@ -58,6 +58,7 @@ jobs:
 
             shouldIgnoreWholeFile() {
               local regex="^\\s*((\\/\\/)|(\\/\\*))\\s*(${ignore_linter_directives[0]})"
+              echo "${file_content[1]} file content inside shouldIgnoreWholeFile"
               local is_first_line_matched=$(echo "${file_content[0]}" | grep -P "$regex")
               if [[ -n "$is_first_line_matched" ]]; then
                 return 0
