@@ -86,6 +86,7 @@ jobs:
                 start_line_linter_ignore=$(linterIgnore "$line_text" "${ignore_linter_directives[2]}")
 
                 end_line_linter_ignore=$(linterIgnore "$line_text" "${ignore_linter_directives[3]}")
+                echo "$end_line_linter_ignore end_line_linter_ignore"
                 
                 next_line_linter_ignore_flag=0
                 between_line_linter_ignore_flag=0
@@ -98,11 +99,9 @@ jobs:
                   next_line_linter_ignore_flag=1
                 elif [ $next_line_linter_ignore_flag -eq 1 ]; then
                   next_line_linter_ignore_flag=0
-                elif [ $between_line_linter_ignore_flag -eq 1 ]; then
-                  if [ $end_line_linter_ignore -eq 1 ]; then
-                    echo "end line linter ignore comment detected"
-                    between_line_linter_ignore_flag=0
-                  fi
+                elif [ $between_line_linter_ignore_flag -eq 1 ] && [ $end_line_linter_ignore -eq 1 ]; then
+                  echo "end line linter ignore comment detected"
+                  between_line_linter_ignore_flag=0
                 else
                   local lineWithoutComments=$(echo "$line_text" | sed -E 's/\/\/.*|\/\*[^*]*\*\///g')
                   local words=()
