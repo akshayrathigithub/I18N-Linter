@@ -67,7 +67,6 @@ jobs:
 
             linterIgnore() {
               if [[ $1 =~ $2 ]]; then
-                echo "Matched $1"
                 return 1
               fi
               return 0
@@ -88,6 +87,8 @@ jobs:
                 
                 next_line_linter_ignore_flag=0
                 between_line_linter_ignore_flag=0
+
+                echo "$next_line_linter_ignore $start_line_linter_ignore $end_line_linter_ignore ignores"
 
                 if [ $start_line_linter_ignore -eq 1 ]; then
                   echo "start line linter ignore comment detected"
