@@ -71,9 +71,9 @@ jobs:
               local regex="^\\s*((\\/\\/)|(\\/\\*))\\s*($ignore_text)"
               local match_found=$(echo "$line_text" | grep -P "$regex")
               if [[ -n "$match_found" ]]; then
-                return 1
+                echo 1
               else
-                return 0
+                echo 0
               fi
             }
 
