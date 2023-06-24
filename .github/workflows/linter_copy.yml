@@ -68,9 +68,9 @@ jobs:
             linterIgnore() {
               echo "function called"
               if [[ $1 =~ $2 ]]; then
-                return 0
+                return 1
               fi
-              return 1
+              return 0
             }
 
             if shouldIgnoreWholeFile; then
@@ -79,9 +79,9 @@ jobs:
                 line_text="${file_content[i]}"
                 echo "$line_text file I"
                 linterIgnore "$line_text" "${ignore_linter_directives[1]}"
-                next_line_linter_ignore=$
+                next_line_linter_ignore=$?
                 echo "$next_line_linter_ignore next_line_linter_ignore"
-                start_line_linter_ignore=$(linterIgnore "$line_text" "${ignore_linter_directives[2]}")
+                start_line_linter_ignore=$(linterIgnore "$line_text" "Hello")
                 end_line_linter_ignore=$(linterIgnore "$line_text" "${ignore_linter_directives[3]}")
                 echo "$start_line_linter_ignore start_line_linter_ignore"
                 echo "$end_line_linter_ignore end_line_linter_ignore"
