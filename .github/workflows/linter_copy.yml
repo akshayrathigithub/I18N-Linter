@@ -71,7 +71,7 @@ jobs:
               fi
               return 1
             }
-            
+
             if shouldIgnoreWholeFile; then
               echo "Linter now scanning code on file:$file"
               echo "${file_content[1]} file content"
@@ -94,7 +94,7 @@ jobs:
                 elif [ $next_line_linter_ignore_flag -eq 1 ]; then
                   next_line_linter_ignore_flag=0
                 elif [ $between_line_linter_ignore_flag -eq 1 ]; then
-                  if [ $next_line_linter_ignore -eq 0 ] ; then
+                  if [ $end_line_linter_ignore -eq 0 ]; then
                     between_line_linter_ignore_flag=0
                   fi
                 else
