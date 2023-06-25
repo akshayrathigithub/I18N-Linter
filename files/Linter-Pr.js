@@ -9,7 +9,7 @@ export default function Linter(){
 
   if(indianCurrency === "INR"){
     return(<div>
-      This is a Ruppees testing account
+      This is a Ruppees testing accoun
     </div>)
   }
 
