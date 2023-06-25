@@ -112,7 +112,7 @@ jobs:
                   else
                     local words=()
                     local warning_msg
-                    IFS=' ' read -r -a words <<< "$line_text"
+                    IFS=' ' read -r -a words <<< "$line_without_comments"
 
                     for word in "${words[@]}"; do
                       for keyword in "${region_specific_words[@]}"; do
