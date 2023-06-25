@@ -147,7 +147,7 @@ jobs:
             else
               printf "Whole file ignore comment found, aborting linter run on file: $file \n"
             fi
-            total_warnings_collected=$((error_count))
+            total_warnings_collected=$((error_count+total_warnings_collected))
             echo "$error_count warnings found for the file:$file"
           }
 
