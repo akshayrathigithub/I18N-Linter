@@ -69,7 +69,7 @@ jobs:
 
             should_ignore_whole_file=$(checkAgainstRegex "${file_content[0]}" "^\\s*((\\/\\/)|(\\/\\*))\\s*(${ignore_linter_directives[0]})")
             if [ $should_ignore_whole_file -eq 0 ]; then
-              printf "Linter now scanning code on file:$file"
+              printf "Linter now scanning code on file:$file \n"
               between_line_linter_ignore_flag=0
               next_line_linter_ignore_flag=0
               for ((i = 0; i < ${#file_content[@]}; i++)); do
@@ -80,16 +80,16 @@ jobs:
                 lines_containing_specific_word_ignore=$()
 
                 if [[ $start_line_linter_ignore -eq 1 ]]; then
-                  printf "start line linter ignore comment detected"
+                  printf "start line linter ignore comment detected \n"
                   between_line_linter_ignore_flag=1
                 elif [[ $next_line_linter_ignore -eq 1 ]]; then
-                  printf "next line linter ignore comment detected"
+                  printf "next line linter ignore comment detected \n"
                   next_line_linter_ignore_flag=1
                 elif [[ $next_line_linter_ignore_flag -eq 1 ]]; then
                   next_line_linter_ignore_flag=0
                 elif [[ $between_line_linter_ignore_flag -eq 1 ]]; then
                   if [[ $end_line_linter_ignore -eq 1 ]]; then
-                    printf "end line linter ignore comment detected"
+                    printf "end line linter ignore comment detected \n"
                     between_line_linter_ignore_flag=0
                   fi
                 else
@@ -103,7 +103,7 @@ jobs:
                     fi
                   done
                   if [[ $shouldLineBeIgnored -eq 1 ]]; then
-                    printf "Line contains restricted keyword, linter will skip line: $lineWithoutComments"
+                    printf "Line contains restricted keyword, linter will skip line: $lineWithoutComments \n"
                   else
                     local words=()
                     local warning_msg
@@ -166,9 +166,9 @@ jobs:
               fi
             done
             if [ "$total_warnings_collected" -gt 0 ]; then
-              printf "$total_warnings_collected warning founds"
+              printf "$total_warnings_collected warning founds \n"
               exit 1
             fi
           else
-            printf "Restricted branch name found, linter won't run"
+            printf "Restricted branch name found, linter won't run \n"
           fi
