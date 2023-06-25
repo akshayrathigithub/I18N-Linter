@@ -40,7 +40,7 @@ jobs:
             local warnings_found=0
             local original_content=$(cat "$file")
             local content_diff=$(git diff origin/${{ github.event.pull_request.base.ref }} origin/${{ steps.extract_branch.outputs.branch }} -- "$file")
-            local error_msg_list=(
+            local warning_msg_list=(
               "Currency value {} is hardcoded, consider using the currency from the User model file, such as props.user.merchant.currency."
               "Region-specific keyword detected, please use generic terms as we also support merchants from multiple regions who may not be familiar with the {} keyword"
               "Avoid direct currency symbol usage, import symbols from the rzp-utils file instead"
@@ -118,7 +118,7 @@ jobs:
                       for keyword in "${region_specific_words[@]}"; do
                         match_found=$(checkAgainstRegex "$word" "\\b(?<!\\.)$keyword\\b")
                         if [ $match_found -eq 1 ]; then
-                          error_msg="${error_msg_list[1]}"
+                          error_msg="${warning_msg_list[1]}"
                           warning_msg="${error_msg//\{\}/$keyword}"
                           echo "::warning file=$file,line=$((i + 1)),col=15,title="Region specific text detected"::$warning_msg"
                           printf "\e[31m$keyword\e[0m found on line number:\e[31m$((i + 1))\e[0m \n"
@@ -129,7 +129,7 @@ jobs:
                       for symbol in "${currency_symbols[@]}"; do
                         match_found=$(checkAgainstRegex "$word" "$symbol")
                         if [ $match_found -eq 1 ]; then
-                          error_msg="${error_msg_list[2]}"
+                          error_msg="${warning_msg_list[2]}"
                           warning_msg="${error_msg//\{\}/$symbol}"
                           echo "::warning file=$file,line=$((i + 1)),col=15,title="Region specific symbol detected"::$warning_msg"
                           printf "\e[31m$symbol\e[0m found on line number:\e[31m$((i + 1))\e[0m \n"
@@ -140,7 +140,7 @@ jobs:
                       for currency in "${currencies[@]}"; do
                         match_found=$(checkAgainstRegex "$word" "\\b(?<!\\.)$currency\\b")
                         if [ $match_found -eq 1 ]; then
-                          error_msg="${error_msg_list[0]}"
+                          error_msg="${warning_msg_list[0]}"
                           warning_msg="${error_msg//\{\}/$currency}"
                           echo "::warning file=$file,line=$((i + 1)),col=15,title="Region specific currency detected"::$warning_msg"
                           printf "\e[31m$currency\e[0m found on line number:\e[31m$((i + 1))\e[0m \n"
@@ -155,7 +155,7 @@ jobs:
               printf "Whole file ignore comment detected, linter will skip the file: $file \n"
             fi
             total_warnings_collected=$((warnings_found+total_warnings_collected))
-            printf "$warnings_found Warnings identified for the file:$file \n\n"
+            printf "\e[31m$warnings_found Warnings identified for the file:$file\e[0m \n\n"
           }
 
           if [ "$steps.extract_branch.outputs.branch" != "revert-*" ] && [ "$steps.extract_branch.outputs.branch" != "skiplint-*" ]; then
