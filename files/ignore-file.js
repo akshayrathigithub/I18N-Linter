@@ -1,26 +1,31 @@
-import React, { useState } from 'react';
-import {currencies} from "utils-file"
-import INR from "currency-utils";
+import React from 'react';
 
-export default function Linter(){
-  const indianCurrency = currencies.INR;
-  const INRSymbol = indianCurrency.symbol;
-  // ignore-i18n-linter-next-line
-  if(indianCurrency === "INR"){
-    return(<div>
-      This is a Ruppees testing account
-    </div>)
-  }
-// ignore-i18n-linter-start
-  if(indianCurrency === "MYR"){
-    return (<div>This is a RBI testing account</div>)
-  }
-// ignore-i18n-linter-end
+const CurrencyConverter = () => {
+  const amount = 1000;
+  const currency = 'INR';
 
-if(indianCurrency === "USD"){
-    return(<div>
-      This is a American testing account
-    </div>)
-  }
-  return(<div></div>)
-}
+  const convertCurrency = () => {
+    if (currency === 'INR') {
+      return amount * 0.014; // Conversion rate for INR to USD
+    } else if (currency === 'MYR') {
+      return amount * 0.24; // Conversion rate for MYR to USD
+    } else if (currency === 'USD') {
+      return amount; // No conversion needed for USD
+    } else {
+      return 'Currency not supported';
+    }
+  };
+
+  const convertedAmount = convertCurrency();
+
+  return (
+    <div>
+      <h2>Currency Converter</h2>
+      <p>Amount: {amount}</p>
+      <p>Currency: {currency}</p>
+      <p>Converted Amount: {convertedAmount} USD</p>
+    </div>
+  );
+};
+
+export default CurrencyConverter;

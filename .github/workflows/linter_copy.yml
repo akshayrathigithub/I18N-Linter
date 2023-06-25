@@ -34,14 +34,16 @@ jobs:
       - name: Running-I18N-Linter
         id: text-files
         run: |
+          total_warnings_collected=0
           checkKeywords() {
             local file="$1"
+            local warnings_found=0
             local original_content=$(cat "$file")
             local content_diff=$(git diff origin/${{ github.event.pull_request.base.ref }} origin/${{ steps.extract_branch.outputs.branch }} -- "$file")
-            local error_msg_list=(
-              "Hardcoded currency {} found, please use currency from User model file something like- props.user.merchant.currency"
-              "Region-specific keyword detected, please use generic terms as we also support multiple regions merchants who might not be aware of {} keyword"
-              "Avoid hardcoding currency symbols instead import symbols from rzp-utils file"
+            local warning_msg_list=(
+              "Currency value {} is hardcoded, consider using the currency from the User model file, such as props.user.merchant.currency."
+              "Region-specific keyword detected, please use generic terms as we also support merchants from multiple regions who may not be familiar with the {} keyword"
+              "Avoid direct currency symbol usage, import symbols from the rzp-utils file instead"
             )
             local ignore_linter_directives=("ignore-i18n-linter" "ignore-i18n-linter-next-line" "ignore-i18n-linter-start" "ignore-i18n-linter-end")
             local warning_title="Razorpay/I18N-Linter"
@@ -50,7 +52,6 @@ jobs:
             local currency_symbols=("\\₹")
             local region_specific_words=("RBI" "GST" "CIN" "Ruppees")
             local linesToBeIgnored=("import")
-            local error_count=0
 
             while IFS= read -r line || [[ "$line" ]]; do
               file_content+=("$line")
@@ -69,7 +70,7 @@ jobs:
 
             should_ignore_whole_file=$(checkAgainstRegex "${file_content[0]}" "^\\s*((\\/\\/)|(\\/\\*))\\s*(${ignore_linter_directives[0]})")
             if [ $should_ignore_whole_file -eq 0 ]; then
-              echo "Linter now scanning code on file:$file"
+              printf "Linter now scanning code on file:\e[32m$file\e[0m \n"
               between_line_linter_ignore_flag=0
               next_line_linter_ignore_flag=0
               for ((i = 0; i < ${#file_content[@]}; i++)); do
@@ -80,76 +81,81 @@ jobs:
                 lines_containing_specific_word_ignore=$()
 
                 if [[ $start_line_linter_ignore -eq 1 ]]; then
-                  echo "start line linter ignore comment detected"
+                  printf "<------- start line linter ignore comment detected -----> \n"
+                  printf "Following code will be skipped by linter \n"
                   between_line_linter_ignore_flag=1
                 elif [[ $next_line_linter_ignore -eq 1 ]]; then
-                  echo "next line linter ignore comment detected"
+                  printf "<------- next line linter ignore comment detected -----> \n"
                   next_line_linter_ignore_flag=1
                 elif [[ $next_line_linter_ignore_flag -eq 1 ]]; then
+                  printf "$line_text \n"
                   next_line_linter_ignore_flag=0
                 elif [[ $between_line_linter_ignore_flag -eq 1 ]]; then
                   if [[ $end_line_linter_ignore -eq 1 ]]; then
-                    echo "end line linter ignore comment detected"
+                    printf "<------- end line linter ignore comment detected -----> \n"
                     between_line_linter_ignore_flag=0
+                  else
+                    printf "$line_text \n"
                   fi
                 else
-                  local lineWithoutComments=$(echo "$line_text" | sed -E 's/\/\/.*|\/\*[^*]*\*\///g')
-                  local shouldLineBeIgnored=0
+                  local line_without_comments=$(echo "$line_text" | sed -E 's/\/\/.*|\/\*[^*]*\*\///g')
+                  local should_line_be_ignored=0
                   for term in "${linesToBeIgnored[@]}"; do
-                    local match_found=$(checkAgainstRegex "$lineWithoutComments" "\\b$term\\b")
+                    local match_found=$(checkAgainstRegex "$line_without_comments" "\\b$term\\b")
                     if [ $match_found -eq 1 ]; then
-                      shouldLineBeIgnored=1
+                      should_line_be_ignored=1
                       break
                     fi
                   done
-                  if [[ $shouldLineBeIgnored -eq 1 ]]; then
-                    echo "Line contains restricted keyword, linter will skip line: $lineWithoutComments"
+                  if [[ $should_line_be_ignored -eq 1 ]]; then
+                    printf "Line contains restricted keyword, linter will exclude the line: $line_without_comments \n"
                   else
                     local words=()
                     local warning_msg
-                    IFS=' ' read -r -a words <<< "$line_text"
+                    IFS=' ' read -r -a words <<< "$line_without_comments"
 
                     for word in "${words[@]}"; do
                       for keyword in "${region_specific_words[@]}"; do
                         match_found=$(checkAgainstRegex "$word" "\\b(?<!\\.)$keyword\\b")
                         if [ $match_found -eq 1 ]; then
-                          error_msg="${error_msg_list[1]}"
+                          error_msg="${warning_msg_list[1]}"
                           warning_msg="${error_msg//\{\}/$keyword}"
                           echo "::warning file=$file,line=$((i + 1)),col=15,title="Region specific text detected"::$warning_msg"
-                          error_count=error_count+1
+                          printf "\e[31m$keyword\e[0m found on line number:\e[31m$((i + 1))\e[0m \n"
+                          warnings_found=$((warnings_found+1))
                         fi
                       done
 
                       for symbol in "${currency_symbols[@]}"; do
                         match_found=$(checkAgainstRegex "$word" "$symbol")
                         if [ $match_found -eq 1 ]; then
-                          error_msg="${error_msg_list[2]}"
+                          error_msg="${warning_msg_list[2]}"
                           warning_msg="${error_msg//\{\}/$symbol}"
                           echo "::warning file=$file,line=$((i + 1)),col=15,title="Region specific symbol detected"::$warning_msg"
-                          error_count=error_count+1
+                          printf "\e[31m$symbol\e[0m found on line number:\e[31m$((i + 1))\e[0m \n"
+                          warnings_found=$((warnings_found+1))
                         fi
                       done
 
                       for currency in "${currencies[@]}"; do
                         match_found=$(checkAgainstRegex "$word" "\\b(?<!\\.)$currency\\b")
                         if [ $match_found -eq 1 ]; then
-                          error_msg="${error_msg_list[0]}"
+                          error_msg="${warning_msg_list[0]}"
                           warning_msg="${error_msg//\{\}/$currency}"
                           echo "::warning file=$file,line=$((i + 1)),col=15,title="Region specific currency detected"::$warning_msg"
-                          error_count=error_count+1
+                          printf "\e[31m$currency\e[0m found on line number:\e[31m$((i + 1))\e[0m \n"
+                          warnings_found=$((warnings_found+1))
                         fi
                       done
                     done
                   fi
                 fi
               done
-              if [ $error_count > 0 ]; then
-                exit 1
-              fi
             else
-              echo "Whole file ignore comment found, aborting linter run on file: $file"
-              printf "\n"
+              printf "Whole file ignore comment detected, linter will skip the file: $file \n"
             fi
+            total_warnings_collected=$((warnings_found+total_warnings_collected))
+            printf "\e[33m$warnings_found Warnings identified for the file:$file\e[0m \n\n"
           }
 
           if [ "$steps.extract_branch.outputs.branch" != "revert-*" ] && [ "$steps.extract_branch.outputs.branch" != "skiplint-*" ]; then
@@ -158,14 +164,16 @@ jobs:
                 if [[ "$file" =~ \.(js|jsx|ts|tsx|html)$ ]]; then
                   checkKeywords "$file"
                 else
-                  echo "Unsupported file extension found, linter wont be running on file: $file"
-                  printf "\n"
+                  printf "File extension is not supported, linter will not analyze the file: $file \n\n"
                 fi
               else
-                echo "File is a part of folder which have been flaged to be ignored, hence linter will ignore file: $file"
-                printf "\n"
+                printf "The file: $file belongs to an ignored folder, so the linter will skip it \n\n"
               fi
             done
+            if [ "$total_warnings_collected" -gt 0 ]; then
+              printf "$total_warnings_collected warning founds"
+              exit 1
+            fi
           else
-            echo "Restricted branch name found, linter won't run"
+            printf "Encountered restricted branch name, linter will not execute \n"
           fi
