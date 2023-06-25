@@ -156,7 +156,6 @@ jobs:
               if ! [[ "$file" =~ \.github.* || "$file" =~ __test__ ]]; then
                 if [[ "$file" =~ \.(js|jsx|ts|tsx|html)$ ]]; then
                   warnings_found=$(checkKeywords "$file")
-                  echo "$warnings_found"
                   total_warnings_collected=total_warnings_collected+warnings_found
                 else
                   echo "Unsupported file extension found, linter wont be running on file: $file"
@@ -168,7 +167,8 @@ jobs:
               fi
             done
             if [ $total_warnings_collected > 0 ]; then
-                exit 1
+              echo "$total_warnings_collected warning founds"
+              exit 1
             fi
           else
             echo "Restricted branch name found, linter won't run"
