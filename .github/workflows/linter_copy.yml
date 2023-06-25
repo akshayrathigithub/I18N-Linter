@@ -101,7 +101,7 @@ jobs:
                       break
                     fi
                   done
-                  if [ $shouldLineBeIgnored -eq 1 ]; then
+                  if [[ $shouldLineBeIgnored -eq 1 ]]; then
                     echo "Line contains restricted keyword, linter will skip line: $lineWithoutComments"
                   else
                     local words=()
