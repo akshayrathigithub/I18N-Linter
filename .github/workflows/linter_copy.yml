@@ -126,7 +126,7 @@ jobs:
                           error_msg="${error_msg_list[2]}"
                           warning_msg="${error_msg//\{\}/$symbol}"
                           echo "::warning file=$file,line=$((i + 1)),col=15,title="Region specific symbol detected"::$warning_msg"
-                          error_count=error_count+1
+                          error_count=$((error_count+1))
                         fi
                       done
 
@@ -136,18 +136,18 @@ jobs:
                           error_msg="${error_msg_list[0]}"
                           warning_msg="${error_msg//\{\}/$currency}"
                           echo "::warning file=$file,line=$((i + 1)),col=15,title="Region specific currency detected"::$warning_msg"
-                          error_count=error_count+1
+                          error_count=$((error_count+1))
                         fi
                       done
                     done
                   fi
                 fi
               done
+              echo "$error_count error count"
             else
               echo "Whole file ignore comment found, aborting linter run on file: $file"
               printf "\n"
             fi
-            echo "$error_count error count"
             return $error_count
           }
 
