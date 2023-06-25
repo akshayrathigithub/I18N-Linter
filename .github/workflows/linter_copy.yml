@@ -143,9 +143,7 @@ jobs:
                   fi
                 fi
               done
-              if [ $error_count > 0 ]; then
-                exit 1
-              fi
+              return $error_count
             else
               echo "Whole file ignore comment found, aborting linter run on file: $file"
               printf "\n"
@@ -153,10 +151,13 @@ jobs:
           }
 
           if [ "$steps.extract_branch.outputs.branch" != "revert-*" ] && [ "$steps.extract_branch.outputs.branch" != "skiplint-*" ]; then
+            total_warnings_collected=0
             for file in ${{ steps.changed-files.outputs.changed_files }}; do
               if ! [[ "$file" =~ \.github.* || "$file" =~ __test__ ]]; then
                 if [[ "$file" =~ \.(js|jsx|ts|tsx|html)$ ]]; then
                   checkKeywords "$file"
+                  warnings_found=?
+                  total_warnings_collected=total_warnings_collected+warnings_found
                 else
                   echo "Unsupported file extension found, linter wont be running on file: $file"
                   printf "\n"
@@ -166,6 +167,9 @@ jobs:
                 printf "\n"
               fi
             done
+            if [ $total_warnings_collected > 0 ]; then
+                exit 1
+            fi
           else
             echo "Restricted branch name found, linter won't run"
           fi
