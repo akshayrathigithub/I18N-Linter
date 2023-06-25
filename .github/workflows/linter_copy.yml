@@ -155,7 +155,7 @@ jobs:
               printf "Whole file ignore comment detected, linter will skip the file: $file \n"
             fi
             total_warnings_collected=$((warnings_found+total_warnings_collected))
-            printf "\e[31m$warnings_found Warnings identified for the file:$file\e[0m \n\n"
+            printf "\e[33m$warnings_found Warnings identified for the file:$file\e[0m \n\n"
           }
 
           if [ "$steps.extract_branch.outputs.branch" != "revert-*" ] && [ "$steps.extract_branch.outputs.branch" != "skiplint-*" ]; then
