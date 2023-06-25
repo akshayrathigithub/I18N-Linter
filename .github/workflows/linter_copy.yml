@@ -35,8 +35,6 @@ jobs:
         id: text-files
         run: |
           total_warnings_collected=0
-          blue=$(tput setaf 4)
-          normal=$(tput sgr0)
           checkKeywords() {
             local file="$1"
             local warnings_found=0
@@ -73,7 +71,6 @@ jobs:
             should_ignore_whole_file=$(checkAgainstRegex "${file_content[0]}" "^\\s*((\\/\\/)|(\\/\\*))\\s*(${ignore_linter_directives[0]})")
             if [ $should_ignore_whole_file -eq 0 ]; then
               printf "Linter now scanning code on file:$file \n"
-              printf "%40s\n" "${blue}This text is blue${normal}"
               between_line_linter_ignore_flag=0
               next_line_linter_ignore_flag=0
               for ((i = 0; i < ${#file_content[@]}; i++)); do
