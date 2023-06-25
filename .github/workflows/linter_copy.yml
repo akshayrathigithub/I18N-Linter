@@ -82,20 +82,20 @@ jobs:
 
                 if [[ $start_line_linter_ignore -eq 1 ]]; then
                   printf "<------- start line linter ignore comment detected -----> \n"
-                  printf "Following code will be skipped by linter"
+                  printf "Following code will be skipped by linte \n"
                   between_line_linter_ignore_flag=1
                 elif [[ $next_line_linter_ignore -eq 1 ]]; then
                   printf "<------- next line linter ignore comment detected -----> \n"
                   next_line_linter_ignore_flag=1
                 elif [[ $next_line_linter_ignore_flag -eq 1 ]]; then
-                  printf "$line_text"
+                  printf "$line_text \n"
                   next_line_linter_ignore_flag=0
                 elif [[ $between_line_linter_ignore_flag -eq 1 ]]; then
                   if [[ $end_line_linter_ignore -eq 1 ]]; then
                     printf "<------- end line linter ignore comment detected -----> \n"
                     between_line_linter_ignore_flag=0
                   else
-                    printf "$line_text"
+                    printf "$line_text \n"
                   fi
                 else
                   local line_without_comments=$(echo "$line_text" | sed -E 's/\/\/.*|\/\*[^*]*\*\///g')
