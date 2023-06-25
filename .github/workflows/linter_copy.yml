@@ -147,7 +147,8 @@ jobs:
               echo "Whole file ignore comment found, aborting linter run on file: $file"
               printf "\n"
             fi
-            return "$error_count"
+            echo "$error_count"
+            return $error_count
           }
 
           if [ "$steps.extract_branch.outputs.branch" != "revert-*" ] && [ "$steps.extract_branch.outputs.branch" != "skiplint-*" ]; then
