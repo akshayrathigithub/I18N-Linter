@@ -155,7 +155,7 @@ jobs:
             for file in ${{ steps.changed-files.outputs.changed_files }}; do
               if ! [[ "$file" =~ \.github.* || "$file" =~ __test__ ]]; then
                 if [[ "$file" =~ \.(js|jsx|ts|tsx|html)$ ]]; then
-                  local warnings_found=0
+                  warnings_found=0
                   checkKeywords "$file" "$warnings_found"
                   total_warnings_collected=total_warnings_collected+warnings_found
                 else
