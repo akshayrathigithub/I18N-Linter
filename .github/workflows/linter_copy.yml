@@ -143,7 +143,7 @@ jobs:
                   fi
                 fi
               done
-              return $error_count
+              return error_count
             else
               echo "Whole file ignore comment found, aborting linter run on file: $file"
               printf "\n"
