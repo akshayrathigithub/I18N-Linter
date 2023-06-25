@@ -71,6 +71,7 @@ jobs:
             should_ignore_whole_file=$(checkAgainstRegex "${file_content[0]}" "^\\s*((\\/\\/)|(\\/\\*))\\s*(${ignore_linter_directives[0]})")
             if [ $should_ignore_whole_file -eq 0 ]; then
               printf "Linter now scanning code on file:$file \n"
+              echo -e "\e[31mRed Text\e[0m \e[32mGreen Text\e[0m"
               between_line_linter_ignore_flag=0
               next_line_linter_ignore_flag=0
               for ((i = 0; i < ${#file_content[@]}; i++)); do
@@ -82,7 +83,7 @@ jobs:
 
                 if [[ $start_line_linter_ignore -eq 1 ]]; then
                   printf "<------- start line linter ignore comment detected -----> \n"
-                  printf "Following code will be skipped by linte \n"
+                  printf "Following code will be skipped by linter \n"
                   between_line_linter_ignore_flag=1
                 elif [[ $next_line_linter_ignore -eq 1 ]]; then
                   printf "<------- next line linter ignore comment detected -----> \n"
