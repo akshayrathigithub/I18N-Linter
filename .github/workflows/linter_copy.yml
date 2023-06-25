@@ -36,7 +36,6 @@ jobs:
         run: |
           checkKeywords() {
             local file="$1"
-            local __res=$2
             local error_count=0
             local original_content=$(cat "$file")
             local content_diff=$(git diff origin/${{ github.event.pull_request.base.ref }} origin/${{ steps.extract_branch.outputs.branch }} -- "$file")
@@ -147,8 +146,7 @@ jobs:
             else
               printf "Whole file ignore comment found, aborting linter run on file: $file \n"
             fi
-            eval $__res="$error_count"
-            # echo $error_count
+            echo "$error_count warnings found for the file:$file"
           }
 
           if [ "$steps.extract_branch.outputs.branch" != "revert-*" ] && [ "$steps.extract_branch.outputs.branch" != "skiplint-*" ]; then
@@ -156,11 +154,9 @@ jobs:
             for file in ${{ steps.changed-files.outputs.changed_files }}; do
               if ! [[ "$file" =~ \.github.* || "$file" =~ __test__ ]]; then
                 if [[ "$file" =~ \.(js|jsx|ts|tsx|html)$ ]]; then
-                  warnings_found=$(checkKeywords "$file" total_error)
-                  echo "$total_error"
-                  # echo "$warnings_found warnings found for the file:$file"
+                  warnings_found=$(checkKeywords "$file")
+                  echo "$warnings_found"
                   echo "$total_warnings_collected + $warnings_found"
-                  # total_warnings_collected=$(echo $((total_warnings_collected+warnings_found)))
                 else
                   printf "Unsupported file extension found, linter wont be running on file: $file \n"
                 fi
