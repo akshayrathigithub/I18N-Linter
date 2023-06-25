@@ -157,7 +157,7 @@ jobs:
                 if [[ "$file" =~ \.(js|jsx|ts|tsx|html)$ ]]; then
                   warnings_found=$(checkKeywords "$file")
                   # echo "$warnings_found warnings found for the file:$file"
-                  echo "$total_warnings_collected + $warnings_found" | bc
+                  echo "$total_warnings_collected + $warnings_found"
                   # total_warnings_collected=$(echo $((total_warnings_collected+warnings_found)))
                 else
                   echo "Unsupported file extension found, linter wont be running on file: $file"
