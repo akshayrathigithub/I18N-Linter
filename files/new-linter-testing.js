@@ -1,9 +1,11 @@
 // Conditionals with keyword variables
 let amount = 1000;
+// ignore-i18n-linter-next-line
 let currency = 'USD';
 let conversionRate = 75;
 let totalAmount;
 
+// ignore-i18n-linter-start
 if (currency === 'INR') {
   totalAmount = amount * conversionRate;
   console.log('Amount in Indian Rupees: ₹' + totalAmount);
@@ -34,7 +36,7 @@ switch (country) {
   default:
     symbol = 'Unknown';
 }
-
+// ignore-i18n-linter-end
 console.log('Currency symbol for ' + country + ': ' + symbol);
 
 // Variable names with keywords
