@@ -116,7 +116,7 @@ jobs:
                           error_msg="${error_msg_list[1]}"
                           warning_msg="${error_msg//\{\}/$keyword}"
                           echo "::warning file=$file,line=$((i + 1)),col=15,title="Region specific text detected"::$warning_msg"
-                          error_count=error_count+1
+                          error_count=$((error_count+1))
                         fi
                       done
 
@@ -157,7 +157,7 @@ jobs:
                 if [[ "$file" =~ \.(js|jsx|ts|tsx|html)$ ]]; then
                   warnings_found=$(checkKeywords "$file")
                   echo "$warnings_found warnings found for the file:$file"
-                  # total_warnings_collected=$((total_warnings_collected+warnings_found))
+                  total_warnings_collected=$((total_warnings_collected+warnings_found))
                 else
                   echo "Unsupported file extension found, linter wont be running on file: $file"
                   printf "\n"
