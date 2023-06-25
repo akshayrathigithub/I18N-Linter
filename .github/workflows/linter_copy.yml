@@ -34,6 +34,7 @@ jobs:
       - name: Running-I18N-Linter
         id: text-files
         run: |
+          total_warnings_collected=0
           checkKeywords() {
             local file="$1"
             local error_count=0
@@ -146,16 +147,15 @@ jobs:
             else
               printf "Whole file ignore comment found, aborting linter run on file: $file \n"
             fi
+            total_warnings_collected=error_count
             echo "$error_count warnings found for the file:$file"
           }
 
           if [ "$steps.extract_branch.outputs.branch" != "revert-*" ] && [ "$steps.extract_branch.outputs.branch" != "skiplint-*" ]; then
-            total_warnings_collected=5
             for file in ${{ steps.changed-files.outputs.changed_files }}; do
               if ! [[ "$file" =~ \.github.* || "$file" =~ __test__ ]]; then
                 if [[ "$file" =~ \.(js|jsx|ts|tsx|html)$ ]]; then
-                  warnings_found=$(checkKeywords "$file")
-                  echo "$total_warnings_collected + $warnings_found"
+                  checkKeywords "$file"
                 else
                   printf "Unsupported file extension found, linter wont be running on file: $file \n"
                 fi
