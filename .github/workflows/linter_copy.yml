@@ -49,6 +49,7 @@ jobs:
             local currencies=("INR" "RM" "MYR" "USD")
             local currency_symbols=("\\₹")
             local region_specific_words=("RBI" "GST" "CIN" "Ruppees")
+            local linesToBeIgnored=("import")
             local error_count=0
 
             while IFS= read -r line || [[ "$line" ]]; do
@@ -97,6 +98,7 @@ jobs:
                   for term in "${linesToBeIgnored[@]}"; do
                     local match_found=$(checkAgainstRegex "$lineWithoutComments" "\\b$term\\b")
                     if [ $match_found -eq 1 ]; then
+                      echo "match found $term"
                       shouldLineBeIgnored=1
                       break
                     fi
@@ -104,6 +106,7 @@ jobs:
                   if [[ $shouldLineBeIgnored -eq 1 ]]; then
                     echo "Line contains restricted keyword, linter will skip line: $lineWithoutComments"
                   else
+                    echo "$"
                     local words=()
                     local warning_msg
                     IFS=' ' read -r -a words <<< "$line_text"
