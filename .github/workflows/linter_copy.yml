@@ -167,7 +167,7 @@ jobs:
                 printf "\n"
               fi
             done
-            if [ $total_warnings_collected > 0 ]; then
+            if [ "$total_warnings_collected" -gt 0 ]; then
               echo "$total_warnings_collected warning founds"
               exit 1
             fi
