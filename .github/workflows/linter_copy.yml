@@ -147,7 +147,7 @@ jobs:
               echo "Whole file ignore comment found, aborting linter run on file: $file"
               printf "\n"
             fi
-            echo "$error_count"
+            echo "$error_count error count"
             return $error_count
           }
 
