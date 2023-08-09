@@ -175,7 +175,7 @@ jobs:
             if [ "$total_warnings_collected" -gt 0 ]; then
               printf "$total_warnings_collected warning founds"
               echo "hardcoding_found=$total_warnings_collected" >> $GITHUB_OUTPUT
-              # exit 1
+              exit 1
             fi
           else
             printf "Encountered restricted branch name, linter will not execute \n"
@@ -190,7 +190,7 @@ jobs:
     - name: Send a slack alert to I18N team
       id: slack
       uses: slackapi/slack-github-action@v1.24.0
-      if: ${{ needs.file_changes.outputs.total_error }} > 0
+      if: ${{ needs.file_changes.result == 'failure' }} && ${{ needs.file_changes.outputs.total_error }} > 0
       with:
         # For posting a rich message using Block Kit
         payload: |
