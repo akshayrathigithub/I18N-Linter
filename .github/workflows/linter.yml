@@ -186,6 +186,7 @@ jobs:
     - name: Send custom JSON data to Slack workflow
       id: slack
       uses: slackapi/slack-github-action@v1.24.0
+      if: ${{ steps.changed-files.outputs.hardcoding_found}} > 0
       with:
         # For posting a rich message using Block Kit
         payload: |
@@ -212,7 +213,7 @@ jobs:
                 "type": "section",
                 "text": {
                   "type": "mrkdwn",
-                  "text": ":bust_in_silhouette: *Author:* @john_doe"
+                  "text": ":bust_in_silhouette: *Author:* *<${{ github.event.pull_request.user.html_url }}|${{ github.event.pull_request.user.login }}>*"
                 }
               },
               {
@@ -226,7 +227,7 @@ jobs:
                 "type": "section",
                 "text": {
                   "type": "mrkdwn",
-                  "text": ":fire: *Message:*\nerrors has been found, requesting a review from @internationalization-fe"
+                  "text": ":fire: *Message:*\n ${{ steps.changed-files.outputs.hardcoding_found}} errors has been found, requesting a review from "
                 }
               },
               {
