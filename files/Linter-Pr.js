@@ -16,5 +16,9 @@ export default function Linter(){
   if(indianCurrency === "MYR"){
     return (<div>This is a RBI testing account</div>)
   }
+
+  if(indianCurrency === "INR" || indianCurrency === "MYR"){
+    return (<div>This is a testing account</div>)
+  }
   return(<div></div>)
 }
