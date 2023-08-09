@@ -183,9 +183,9 @@ jobs:
     name: Slack Notification
     runs-on: ubuntu-latest
     steps:
-      if: steps.changed-files.outputs.hardcoding_found > 0
     - uses: actions/checkout@v2
     - name: Slack Notification
+      if: steps.changed-files.outputs.hardcoding_found > 0
       uses: rtCamp/action-slack-notify@v2
       env:
         SLACK_CHANNEL: i18n-tech
