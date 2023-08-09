@@ -183,25 +183,6 @@ jobs:
     name: Slack Notification
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Slack Notification
-      if: ${{ steps.changed-files.outputs.hardcoding_found}} > 0
-      uses: rtCamp/action-slack-notify@v2
-      env:
-        SLACK_CHANNEL: general
-        SLACK_COLOR: good
-        SLACK_ICON_EMOJI: ':bell:'
-        SLACK_MESSAGE: 'Hardcoding has been found in the pr'
-        SLACK_TITLE: ${{ github.event.pull_request.title }}
-        SLACK_USERNAME: ${{ github.event.pull_request.html_url }}
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
-        SLACK_FOOTER: Powered By Razorpay
-        SLACK_LINK_NAMES: '@internationalization-fe'
-
-  notification:
-    name: Notification-V2
-    runs-on: ubuntu-latest
-    steps:
     - name: Send custom JSON data to Slack workflow
       id: slack
       uses: slackapi/slack-github-action@v1.24.0
@@ -209,13 +190,50 @@ jobs:
         # For posting a rich message using Block Kit
         payload: |
           {
-            "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}",
             "blocks": [
               {
                 "type": "section",
                 "text": {
                   "type": "mrkdwn",
-                  "text": "GitHub Action build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}\nTitle of PR: ${{ github.event.pull_request.title }}"
+                  "text": ":error: *Urgent Alert!* :error:"
+                }
+              },
+              {
+                "type": "divider"
+              },
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": ":exclamation: *Pull Request:* ${{ github.event.pull_request.title }}"
+                }
+              },
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": ":bust_in_silhouette: *Author:* @john_doe"
+                }
+              },
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": ":construction: *Status:* Open"
+                }
+              },
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": ":fire: *Message:*\nerrors has been found, requesting a review from @internationalization-fe"
+                }
+              },
+              {
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": ":link: *PR URL:* <${{ github.event.pull_request.html_url || github.event.head_commit.url }}>"
                 }
               }
             ]
