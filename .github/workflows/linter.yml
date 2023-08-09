@@ -196,5 +196,5 @@ jobs:
         SLACK_USERNAME: ${{ github.event.pull_request.html_url }}
         SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
         SLACK_FOOTER: Powered By Razorpay
-        SLACK_LINK_NAMES: @internationalization-fe
+        SLACK_LINK_NAMES: internationalization-fe
         MSG_MINIMAL: actions url, commit
