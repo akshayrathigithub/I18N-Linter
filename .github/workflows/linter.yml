@@ -185,7 +185,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - name: Slack Notification
-      if: steps.changed-files.outputs.hardcoding_found > 0
+      if: ${{ steps.changed-files.outputs.hardcoding_found}} > 0
       uses: rtCamp/action-slack-notify@v2
       env:
         SLACK_CHANNEL: I18N Linter
