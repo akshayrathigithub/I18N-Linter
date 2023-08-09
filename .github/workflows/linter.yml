@@ -190,7 +190,7 @@ jobs:
     - name: Send a slack alert to I18N team
       id: slack
       uses: slackapi/slack-github-action@v1.24.0
-      if: ${{ needs.file_changes.result == 'failure' }} && ${{ needs.file_changes.outputs.total_error }} > 0
+      if: ${{ (needs.file_changes.result == 'failure') && (needs.file_changes.outputs.total_error > 0) }}
       with:
         # For posting a rich message using Block Kit
         payload: |
