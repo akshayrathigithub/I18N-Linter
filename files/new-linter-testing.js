@@ -47,3 +47,4 @@ let MYR_Value = 50;
 console.log('₹ Value:', value);
 console.log('INR Value:', INR_Value);
 console.log('MYR Value:', MYR_Value);
+console.log('USD Value:', MYR_Value);
