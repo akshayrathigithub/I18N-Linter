@@ -185,7 +185,7 @@ jobs:
     steps:
     - name: Testing
       run: |
-        echo "${{ steps.changed-files.outputs.hardcoding_found}}"
+        echo "${{ steps.changed-files.outputs}}"
 
     - name: Send custom JSON data to Slack workflow
       id: slack
