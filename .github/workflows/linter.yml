@@ -12,6 +12,8 @@ jobs:
   file_changes:
     name: Razorpay I18N Linter
     runs-on: ubuntu-latest
+    outputs:
+      total_error: ${{ steps.text-files.outputs.hardcoding_found }}
 
     steps:
       - uses: actions/checkout@v3
@@ -182,12 +184,13 @@ jobs:
   slackNotification:
     name: Slack Notification
     runs-on: ubuntu-latest
+    needs: file_changes
     steps:
     - name: Testing
       env:
-        HARD_CODING: ${{ toJson(needs) }}
+        HARD_CODING: ${{ toJson(needs.file_changes) }}
       run: |
-        echo ${{ needs.file_changes.outputs }}
+        echo ${{ needs.file_changes.outputs.total_error }}
         echo "$HARD_CODING"
 
     - name: Send custom JSON data to Slack workflow
