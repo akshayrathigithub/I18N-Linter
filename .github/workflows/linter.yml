@@ -172,8 +172,27 @@ jobs:
             done
             if [ "$total_warnings_collected" -gt 0 ]; then
               printf "$total_warnings_collected warning founds"
+              echo "hardcoding_found=$total_warnings_collected" >> $GITHUB_OUTPUT
               exit 1
             fi
           else
             printf "Encountered restricted branch name, linter will not execute \n"
           fi
+
+  slackNotification:
+    name: Slack Notification
+    runs-on: ubuntu-latest
+    steps:
+      if: steps.changed-files.outputs.hardcoding_found > 0
+    - uses: actions/checkout@v2
+    - name: Slack Notification
+      uses: rtCamp/action-slack-notify@v2
+      env:
+        SLACK_CHANNEL: i18n-tech
+        SLACK_COLOR: good
+        SLACK_ICON_EMOJI: ':bell:'
+        SLACK_MESSAGE: 'Hardcoding has been found in the pr :rocket: ${{ github.event.pull_request.html_url }}'
+        SLACK_TITLE: ${{ github.event.pull_request.title }}
+        SLACK_USERNAME: I18N Linter
+        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL }}
+        SLACK_FOOTER: Powered By Razorpay
