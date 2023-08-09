@@ -187,6 +187,8 @@ jobs:
       id: slack
       uses: slackapi/slack-github-action@v1.24.0
       if: ${{ steps.changed-files.outputs.hardcoding_found}} > 0
+      run: |
+        echo "${{ steps.changed-files.outputs.hardcoding_found}}"
       with:
         # For posting a rich message using Block Kit
         payload: |
@@ -240,5 +242,5 @@ jobs:
             ]
           }
       env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+        # SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        # SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
