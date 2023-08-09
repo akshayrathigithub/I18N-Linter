@@ -188,7 +188,7 @@ jobs:
     steps:
     - name: Testing
       env:
-        HARD_CODING: ${{ toJson(needs.file_changes) }}
+        HARD_CODING: ${{ toJson(needs) }}
       run: |
         echo ${{ needs.file_changes.outputs.total_error }}
         echo "$HARD_CODING"
