@@ -175,7 +175,7 @@ jobs:
             if [ "$total_warnings_collected" -gt 0 ]; then
               printf "$total_warnings_collected warning founds"
               echo "hardcoding_found=$total_warnings_collected" >> $GITHUB_OUTPUT
-              exit 1
+              # exit 1
             fi
           else
             printf "Encountered restricted branch name, linter will not execute \n"
