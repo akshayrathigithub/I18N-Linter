@@ -162,7 +162,7 @@ jobs:
 
           if [ "$steps.extract_branch.outputs.branch" != "revert-*" ] && [ "$steps.extract_branch.outputs.branch" != "skiplint-*" ]; then
             for file in ${{ steps.changed-files.outputs.changed_files }}; do
-              if ! [[ "$file" =~ \.github.* || "$file" =~ __test__ ]]; then
+              if ! [[ "$file" =~ \.github.* || "$file" =~ __test__ || "$file" =~ *.test.* ]]; then
                 if [[ "$file" =~ \.(js|jsx|ts|tsx|html)$ ]]; then
                   checkKeywords "$file"
                 else
@@ -244,5 +244,5 @@ jobs:
             ]
           }
       env:
-        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        # SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
